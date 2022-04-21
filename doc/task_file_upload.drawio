@@ -1,0 +1,142 @@
+<mxfile host="Electron" modified="2022-04-21T07:51:58.166Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/16.5.1 Chrome/96.0.4664.110 Electron/16.0.7 Safari/537.36" etag="zq5odWM7FnLHNGZbBhC_" compressed="false" version="16.5.1" type="device">
+  <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
+    <mxGraphModel dx="1780" dy="960" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="WIyWlLk6GJQsqaUBKTNV-0" />
+        <mxCell id="WIyWlLk6GJQsqaUBKTNV-1" parent="WIyWlLk6GJQsqaUBKTNV-0" />
+        <mxCell id="_-EV1IGkffC3XaDp03Zx-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="_-EV1IGkffC3XaDp03Zx-3" target="_-EV1IGkffC3XaDp03Zx-5" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="_-EV1IGkffC3XaDp03Zx-3" value="创建文件上传任务" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#FF8000;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="20" y="155" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="_-EV1IGkffC3XaDp03Zx-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="_-EV1IGkffC3XaDp03Zx-5" target="_-EV1IGkffC3XaDp03Zx-6" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="_-EV1IGkffC3XaDp03Zx-5" value="未开始上传切片" style="rounded=1;whiteSpace=wrap;html=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="20" y="240" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="_-EV1IGkffC3XaDp03Zx-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="_-EV1IGkffC3XaDp03Zx-6" target="_-EV1IGkffC3XaDp03Zx-7" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="_-EV1IGkffC3XaDp03Zx-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="_-EV1IGkffC3XaDp03Zx-6" target="_-EV1IGkffC3XaDp03Zx-11" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="_-EV1IGkffC3XaDp03Zx-6" value="上传切片..." style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#80FF00;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="170" y="240" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="_-EV1IGkffC3XaDp03Zx-14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="_-EV1IGkffC3XaDp03Zx-7" target="_-EV1IGkffC3XaDp03Zx-13" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="_-EV1IGkffC3XaDp03Zx-7" value="上传切片完成" style="rounded=1;whiteSpace=wrap;html=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="320" y="240" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="_-EV1IGkffC3XaDp03Zx-11" value="上传切片失败" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#FF0000;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="170" y="320" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="_-EV1IGkffC3XaDp03Zx-16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="_-EV1IGkffC3XaDp03Zx-13" target="_-EV1IGkffC3XaDp03Zx-15" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="_-EV1IGkffC3XaDp03Zx-31" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="_-EV1IGkffC3XaDp03Zx-13" target="_-EV1IGkffC3XaDp03Zx-17" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="_-EV1IGkffC3XaDp03Zx-13" value="合并切片..." style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#80FF00;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="470" y="240" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="_-EV1IGkffC3XaDp03Zx-22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="_-EV1IGkffC3XaDp03Zx-15" target="_-EV1IGkffC3XaDp03Zx-19" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="_-EV1IGkffC3XaDp03Zx-23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="_-EV1IGkffC3XaDp03Zx-15" target="_-EV1IGkffC3XaDp03Zx-21" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="_-EV1IGkffC3XaDp03Zx-15" value="合并切片完成" style="rounded=1;whiteSpace=wrap;html=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="620" y="240" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="_-EV1IGkffC3XaDp03Zx-17" value="合并切片失败" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#FF0000;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="470" y="320" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="_-EV1IGkffC3XaDp03Zx-38" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="_-EV1IGkffC3XaDp03Zx-19" target="_-EV1IGkffC3XaDp03Zx-34" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="_-EV1IGkffC3XaDp03Zx-47" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="_-EV1IGkffC3XaDp03Zx-19" target="_-EV1IGkffC3XaDp03Zx-46" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="_-EV1IGkffC3XaDp03Zx-19" value="向 MinIO 服务器&lt;br&gt;转移数据..." style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#80FF00;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="780" y="155" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="_-EV1IGkffC3XaDp03Zx-36" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="_-EV1IGkffC3XaDp03Zx-21" target="_-EV1IGkffC3XaDp03Zx-25" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="_-EV1IGkffC3XaDp03Zx-39" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="_-EV1IGkffC3XaDp03Zx-21" target="_-EV1IGkffC3XaDp03Zx-29" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="_-EV1IGkffC3XaDp03Zx-21" value="作为视频文件&lt;br&gt;转码切片..." style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#80FF00;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="780" y="320" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="_-EV1IGkffC3XaDp03Zx-28" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="_-EV1IGkffC3XaDp03Zx-25" target="_-EV1IGkffC3XaDp03Zx-19" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="_-EV1IGkffC3XaDp03Zx-25" value="转码切片完成" style="rounded=1;whiteSpace=wrap;html=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="780" y="240" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="_-EV1IGkffC3XaDp03Zx-29" value="转码切片失败" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#FF0000;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="930" y="320" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="_-EV1IGkffC3XaDp03Zx-33" value="带有&quot;...&quot;符号标记的都是耗时操作&lt;br&gt;执行过程中可能由用户取消 / 执行出现错误" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="100" y="610" width="240" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="_-EV1IGkffC3XaDp03Zx-34" value="转移失败" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#FF0000;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="930" y="155" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="_-EV1IGkffC3XaDp03Zx-46" value="文件上传任务完成" style="whiteSpace=wrap;html=1;strokeColor=#FF8000;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="780" y="70" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="_-EV1IGkffC3XaDp03Zx-49" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="_-EV1IGkffC3XaDp03Zx-48" target="_-EV1IGkffC3XaDp03Zx-19" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="_-EV1IGkffC3XaDp03Zx-48" value="普通文件可以直接向 MinIO 服务器转移" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="520" y="90" width="220" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="_-EV1IGkffC3XaDp03Zx-51" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="_-EV1IGkffC3XaDp03Zx-50" target="_-EV1IGkffC3XaDp03Zx-15" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="_-EV1IGkffC3XaDp03Zx-50" value="视频文件需要先切片再转移&lt;br&gt;至于某个文件是否是视频文件&lt;br&gt;这个由前台 / 用户决定&lt;br&gt;&lt;br&gt;普通文件 / 转码切片的视频文件&lt;br&gt;两种存储方式的访问方式不同" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="590" y="390" width="180" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="_-EV1IGkffC3XaDp03Zx-53" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="_-EV1IGkffC3XaDp03Zx-52" target="_-EV1IGkffC3XaDp03Zx-11" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="_-EV1IGkffC3XaDp03Zx-52" value="上传失败有两种情况&lt;br&gt;1. 上传超时 客户端在规定时限内没有完成切片上传任务&lt;br&gt;2. 上传取消 由前台取消了上传任务&lt;br&gt;两种情况下 服务端都需要清理缓存文件" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="75" y="400" width="310" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="_-EV1IGkffC3XaDp03Zx-55" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="_-EV1IGkffC3XaDp03Zx-54" target="_-EV1IGkffC3XaDp03Zx-17" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="_-EV1IGkffC3XaDp03Zx-54" value="合并切片失败只能是后端出了问题&lt;br&gt;这种任务会保留一段时间&lt;br&gt;保留期内前台可以请求到该任务的状态并有两种选择&lt;br&gt;1. 直接取消上传任务 此时服务端会开始清理缓存文件&lt;br&gt;2. 重试合并切片" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="380" y="510" width="300" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="_-EV1IGkffC3XaDp03Zx-58" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="_-EV1IGkffC3XaDp03Zx-56" target="_-EV1IGkffC3XaDp03Zx-29" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="_-EV1IGkffC3XaDp03Zx-56" value="转码切片操作是调用 ffmpeg 做&lt;br&gt;这个过程指不定出什么幺蛾子&lt;br&gt;失败有两种可能性&lt;br&gt;1. 用户嫌时间太长了 主动取消转码切片任务&lt;br&gt;这个时候服务端开始清理缓存&lt;br&gt;2. ffmpeg 抛出异常 这个时候用户可以选择重试" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="1111" y="305" width="260" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="_-EV1IGkffC3XaDp03Zx-60" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="_-EV1IGkffC3XaDp03Zx-59" target="_-EV1IGkffC3XaDp03Zx-34" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="_-EV1IGkffC3XaDp03Zx-59" value="理论上这一步可能会特别慢&lt;br&gt;但是应该不至于在后端失败&lt;br&gt;所以应该是用户在前端取消了上传任务" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="1131" y="160" width="220" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="_-EV1IGkffC3XaDp03Zx-61" value="所有的任务状态都放在内存里&lt;br&gt;系统对外提供一个优雅关闭方法&lt;br&gt;保证关闭的时候没有正在进行中的任务" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="110" y="700" width="220" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="cxq3kuLBUq8-rETzfqgn-0" value="这个流程图表示的后端操作流程&lt;br&gt;但是不一一对应前台 UI&lt;br&gt;对于用户来说的操作其实没有这么多东西&lt;br&gt;很多步骤之间都是自动继续进行下一步&lt;br&gt;&lt;br&gt;用户只需要选择本次上传的是什么类型的文件&lt;br&gt;在出现问题的时候选择是否取消重试&lt;br&gt;或者在执行任务的过程中选择取消任务" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="370" y="610" width="260" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="cxq3kuLBUq8-rETzfqgn-1" value="上传完成之后&lt;br&gt;服务端会在数据库记录文件信息&lt;br&gt;以后访问文件的时候会根据文件信息&lt;br&gt;自动从 MinIO 获取文件流透传给前台" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="670" y="610" width="210" height="60" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

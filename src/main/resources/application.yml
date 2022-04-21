@@ -1,0 +1,32 @@
+# minio 连接相关
+app:
+  minio:
+    username: minioadmin
+    password: minioadmin
+  cache:
+    folder: ./cache
+
+server:
+  port: 29011
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://192.168.80.167:3306/sdyzt?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf8&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull
+    #    url: jdbc:postgresql://localhost:5432/localsdyzt?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf8&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull
+    username: root
+    password: root
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      minimum-idle: 5
+      idle-timeout: 600000
+      maximum-pool-size: 10
+      auto-commit: true
+      pool-name: HikariCorePool
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      connection-test-query: select * from information_schema.tables limit 1
+    initialization-mode: always
