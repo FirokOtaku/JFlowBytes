@@ -1,10 +1,20 @@
 # minio 连接相关
 app:
   minio:
+    # minio 地址
+    url: http://192.168.19.115:29001
     username: minioadmin
     password: minioadmin
   cache:
+    # 缓存文件夹 用于储存各种切片文件/转码文件
     folder: ./cache
+  lib:
+    # 如果没有提供, 则自动从资源文件导出出一份能用的库文件到lib目录
+    # 很可能这个最终只会面向windows系统进行操作
+    # ffmpeg 可执行文件路径
+    ffmepg: ./ffmpeg
+    # ffprobe 可执行文件路径
+    ffprobe: ./ffprobe
 
 server:
   port: 29011

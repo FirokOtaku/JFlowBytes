@@ -1,5 +1,6 @@
 package firok.spring.jfb.bean;
 
+import firok.spring.mvci.MVCIntrospective;
 import lombok.Data;
 
 /**
@@ -8,6 +9,7 @@ import lombok.Data;
  * @author firok
  */
 @Data
+@MVCIntrospective
 public class FileInfoBean extends BaseBean
 {
 	/**
@@ -37,10 +39,4 @@ public class FileInfoBean extends BaseBean
 	 * 如果文件类型为 single, 此字段无意义
 	 */
 	private Integer sizeSlice;
-
-	/**
-	 * 文件上传状态
-	 * 可选值: 0 - 初始化, 1 - 正在上传, 2 - 上传完成, 3 - 上传失败或取消
-	 */
-	private Integer uploadStatus;
 }

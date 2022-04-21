@@ -2,6 +2,8 @@ package firok.spring.jfb.util;
 
 /**
  * 缓存文件状态
+ *
+ * 详见 doc/task_file_upload.drawio
  */
 @SuppressWarnings("unused")
 public enum FileStatusEnum
@@ -42,6 +44,21 @@ public enum FileStatusEnum
 	MergeSuccess,
 
 	/**
+	 * 转码切片中
+	 */
+	Transforming,
+
+	/**
+	 * 转码切片取消
+	 */
+	TransformError,
+
+	/**
+	 * 转码切片完成
+	 */
+	TransformSuccess,
+
+	/**
 	 * 向 MinIO 服务器转移数据
 	 */
 	TransportMinio,
@@ -50,4 +67,16 @@ public enum FileStatusEnum
 	 * 转移取消
 	 */
 	TransportCancel,
+
+	/**
+	 * 转移成功
+	 */
+	TransportSuccess,
+
+
+	/**
+	 * 任务已经结束
+	 */
+	Finished,
+	;
 }
