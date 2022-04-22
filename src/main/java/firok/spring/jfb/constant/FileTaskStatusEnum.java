@@ -1,4 +1,4 @@
-package firok.spring.jfb.util;
+package firok.spring.jfb.constant;
 
 /**
  * 缓存文件状态
@@ -6,7 +6,7 @@ package firok.spring.jfb.util;
  * 详见 doc/task_file_upload.drawio
  */
 @SuppressWarnings("unused")
-public enum FileStatusEnum
+public enum FileTaskStatusEnum
 {
 	/**
 	 * 未开始上传

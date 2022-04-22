@@ -1,10 +1,17 @@
 package firok.spring.jfb.controller;
 
 import firok.spring.jfb.bean.Ret;
-import org.springframework.core.io.FileSystemResource;
+import firok.spring.jfb.ioo.vo.CreateFileTaskVO;
+import firok.spring.jfb.service_impl.FileControllerService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.async.WebAsyncTask;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+import java.util.concurrent.Callable;
 
 /**
  * 上传相关接口
@@ -13,52 +20,52 @@ import java.util.List;
  * 视频文件在前端切片上传完成之后, 调用 ffmpeg 切片, 切片完成之后把所有文件数据放进 MinIO, 然后删除缓冲文件.
  */
 @RestController
+@RequestMapping("/api/upload")
 public class UploadController
 {
-	/**
-	 * 上传任务列表
-	 */
-	private List<?> listTask;
+	@Autowired
+	FileControllerService service;
 
 	/**
 	 * 创建上传任务, 这会返回一个任务信息, 客户端需要根据任务信息把所有分片上传至服务器
 	 */
-	public Ret<?> createTaskUploadCache()
+	@PostMapping("/createTask")
+	public Ret<CreateFileTaskVO> createTask()
 	{
+
 		return Ret.success();
 	}
 
 	/**
 	 * 向某个任务上传一个文件分片
 	 */
-	public Ret<?> uploadSlice()
+	@PostMapping("/uploadSlice")
+	public WebAsyncTask<Ret<?>> uploadSlice(
+			@RequestPart("file") MultipartFile file, // 文件流
+			@RequestPart("taskId") String idTask, // 任务id
+			@RequestPart("sliceIndex") int indexSlice // 分片号
+	) // fixme 后面可能需要配置WebAsyncTask的线程池
 	{
-		return Ret.success();
+		Callable<Ret<?>> callable = () -> {
+			try
+			{
+				service.uploadSlice(idTask, indexSlice, file);
+				return Ret.success();
+			}
+			catch (Exception e)
+			{
+				return Ret.fail(e);
+			}
+		};
+
+		var ret = new WebAsyncTask<>(callable);
+
+		ret.onCompletion(() -> {
+			// 检查任务状态
+			// 如果上传完成 就合并操作
+			service.checkTask(idTask);
+		});
+		return ret;
 	}
 
-	/**
-	 * 上传文件任务实体
-	 */
-	class UploadTask
-	{
-		/**
-		 * 原始文件名
-		 */
-		String fileName;
-
-		/**
-		 * 文件大小
-		 */
-		long fileSize;
-
-		/**
-		 * 切片数量
-		 */
-		int sliceCount;
-
-		/**
-		 * 切片大小
-		 */
-		int sliceSize;
-	}
 }

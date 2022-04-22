@@ -1,10 +1,12 @@
+
 # minio 连接相关
 app:
   minio:
     # minio 地址
     url: http://192.168.19.115:29001
-    username: minioadmin
-    password: minioadmin
+    username: minio-server
+    password: minio-server-password-000*
+    name-bucket: jfb
   cache:
     # 缓存文件夹 用于储存各种切片文件/转码文件
     folder: ./cache
@@ -24,11 +26,14 @@ server:
       force: true
 spring:
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://192.168.80.167:3306/sdyzt?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf8&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull
-    #    url: jdbc:postgresql://localhost:5432/localsdyzt?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf8&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull
-    username: root
-    password: root
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://192.168.80.167:3306/sdyzt?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf8&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull
+#    username: root
+#    password: root
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://192.168.80.103:5432/chengyang?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf8&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull
+    username: postgres
+    password: postgres
     type: com.zaxxer.hikari.HikariDataSource
     hikari:
       minimum-idle: 5

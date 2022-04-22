@@ -32,6 +32,7 @@ public class Ret<TypeData>
 	}
 	public static <TypeData> Ret<TypeData> fail()
 	{
-		return fail(null);
+		return fail((String) null);
 	}
+	public static <TypeData> Ret<TypeData> fail(Exception e) { return fail(e.getMessage()); }
 }
