@@ -24,6 +24,7 @@ server:
     encoding:
       charset: UTF-8
       force: true
+
 spring:
   datasource:
 #    driver-class-name: com.mysql.cj.jdbc.Driver
@@ -45,3 +46,9 @@ spring:
       connection-timeout: 30000
       connection-test-query: select * from information_schema.tables limit 1
     initialization-mode: always
+  mvc:
+    static-path-pattern: /static/**
+  servlet:
+    multipart:
+      max-file-size: 2048MB
+      max-request-size: 2048MB

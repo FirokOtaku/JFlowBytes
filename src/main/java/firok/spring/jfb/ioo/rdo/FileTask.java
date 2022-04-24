@@ -55,16 +55,16 @@ public class FileTask
 
 	private FileTaskStatusEnum taskStatus;
 
-	public FileTask(String fileName, long fileSize, int sliceCount, long sliceSize, CacheFolder folder)
+	public FileTask(String fileName, long fileSize, long sliceSize, CacheFolder folder)
 	{
-		this(UUID.randomUUID().toString(), fileName, fileSize, sliceCount, sliceSize, folder);
+		this(UUID.randomUUID().toString(), fileName, fileSize, sliceSize, folder);
 	}
-	public FileTask(String id, String fileName, long fileSize, int sliceCount, long sliceSize, CacheFolder folder)
+	public FileTask(String id, String fileName, long fileSize, long sliceSize, CacheFolder folder)
 	{
 		this.id = id;
 		this.fileName = fileName;
 		this.fileSize = fileSize;
-		this.sliceCount = sliceCount;
+		this.sliceCount = (int) (fileSize / sliceSize + (fileSize % sliceSize == 0 ? 0 : 1));
 		this.sliceSize = sliceSize;
 
 		this.sliceStatus = new SliceUploadStatusEnum[sliceCount];
@@ -103,5 +103,18 @@ public class FileTask
 		for (var status : this.sliceStatus)
 			if(status != SliceUploadStatusEnum.Uploaded) return false;
 		return true;
+	}
+
+	/**
+	 * 当前正在进行中的进程
+	 */
+	private Thread thread;
+	public Thread getCurrentThread()
+	{
+		return thread;
+	}
+	public void setCurrentThread(Thread thread)
+	{
+		this.thread = thread;
 	}
 }

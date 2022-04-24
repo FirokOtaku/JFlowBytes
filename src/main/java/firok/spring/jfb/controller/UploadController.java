@@ -1,13 +1,12 @@
 package firok.spring.jfb.controller;
 
 import firok.spring.jfb.bean.Ret;
+import firok.spring.jfb.ioo.ro.CreateTaskParam;
 import firok.spring.jfb.ioo.vo.CreateFileTaskVO;
+import firok.spring.jfb.ioo.vo.QueryTaskVO;
 import firok.spring.jfb.service_impl.FileControllerService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.WebAsyncTask;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,10 +29,38 @@ public class UploadController
 	 * 创建上传任务, 这会返回一个任务信息, 客户端需要根据任务信息把所有分片上传至服务器
 	 */
 	@PostMapping("/createTask")
-	public Ret<CreateFileTaskVO> createTask()
-	{
+	public Ret<CreateFileTaskVO> createTask(
+			@RequestBody CreateTaskParam param
+	) {
+		try
+		{
+			var task = service.createTask(
+					param.fileName(),
+					param.fileSize(),
+					param.sliceSize()
+			);
+			return Ret.success(task);
+		}
+		catch (Exception e)
+		{
+			return Ret.fail(e.getMessage());
+		}
+	}
 
-		return Ret.success();
+	@GetMapping("/queryTask")
+	public Ret<QueryTaskVO> queryTask(
+			@RequestParam("idTask") String idTask
+	) {
+		try
+		{
+			var task = service.getTask(idTask);
+			if(task == null) throw new IllegalArgumentException("任务不存在或已超时");
+			return Ret.success(task);
+		}
+		catch (Exception e)
+		{
+			return Ret.fail(e.getMessage());
+		}
 	}
 
 	/**
@@ -42,8 +69,8 @@ public class UploadController
 	@PostMapping("/uploadSlice")
 	public WebAsyncTask<Ret<?>> uploadSlice(
 			@RequestPart("file") MultipartFile file, // 文件流
-			@RequestPart("taskId") String idTask, // 任务id
-			@RequestPart("sliceIndex") int indexSlice // 分片号
+			@RequestParam("taskId") String idTask, // 任务id
+			@RequestParam("sliceIndex") int indexSlice // 分片号
 	) // fixme 后面可能需要配置WebAsyncTask的线程池
 	{
 		Callable<Ret<?>> callable = () -> {
@@ -63,7 +90,7 @@ public class UploadController
 		ret.onCompletion(() -> {
 			// 检查任务状态
 			// 如果上传完成 就合并操作
-			service.checkTask(idTask);
+			service.checkTaskUploadFinish(idTask);
 		});
 		return ret;
 	}

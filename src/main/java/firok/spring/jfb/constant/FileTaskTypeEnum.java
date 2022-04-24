@@ -8,7 +8,7 @@ public enum FileTaskTypeEnum
 	/**
 	 * 普通文件 - 纯上传
 	 */
-	UploadSingleBig,
+	Upload_Single_Big,
 
 	/**
 	 * 视频 - 转码切片

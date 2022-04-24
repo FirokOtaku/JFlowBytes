@@ -1,0 +1,48 @@
+<html>
+<head>
+    <title>上传示例</title>
+    <meta charset="utf-8">
+    <script src="axios.min.js"></script>
+    <script src="vue.js"></script>
+</head>
+<body>
+
+<div id="app">
+    <div>
+        <input type="file"
+               id="123"
+               ref="fileObject"
+               @change="fileObject = $refs['fileObject']?.files[0]">
+    </div>
+    <div>
+        选中的文件: {{ fileName }}
+    </div>
+    <div>
+        文件大小 {{ fileSize }} Byte
+    </div>
+    <div>
+        切片上传大小 <input type="number" v-model="sliceSize"> Byte
+    </div>
+    <div>
+        切片数量 {{ sliceCount }}
+    </div>
+    <div>
+        <button @click="startUploadTask()">开始上传</button>
+    </div>
+    <div>
+        {{ hasStartUpload ? '开始上传' : '等待上传' }}
+    </div>
+    <div>
+        {{ taskUpload?.process ?? '暂无状态' }}
+    </div>
+
+    <div>
+        <button @click="stopUploadTask()">停止监听状态</button>
+    </div>
+
+</div>
+
+</body>
+<script src="upload-kit.js"></script>
+<script src="upload-demo.js"></script>
+</html>
