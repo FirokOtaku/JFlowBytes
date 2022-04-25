@@ -15,16 +15,16 @@ import java.security.NoSuchAlgorithmException;
 public class MinioConfig
 {
 	@Value("${app.minio.name-bucket}")
-	String nameBucket;
+	public String nameBucket;
 
 	@Value("${app.minio.url}")
-	String url;
+	public String url;
 
 	@Value("${app.minio.username}")
-	String username;
+	public String username;
 
 	@Value("${app.minio.password}")
-	String password;
+	public String password;
 
 	@Bean
 	public MinioClient minioClient() throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException

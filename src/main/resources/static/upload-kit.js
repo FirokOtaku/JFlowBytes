@@ -46,12 +46,12 @@ async function createTask(
             sliceSize,
         },
     });
-    console.log('返回值',res);
     const id = res.data.data.id;
-    console.log('id', id);
 
     if(id == null) throw '无法创建任务';
 
+    // fixme 猜测是 http 最大连接数限制了这个代码的执行
+    //       换用web socket可能好一些
     let threadTask = setInterval(()=>{
         axios({
             url: '/api/upload/queryTask',
@@ -62,6 +62,8 @@ async function createTask(
         })
         .then(res => {
             task.process = res.data.data.process;
+            if(task.process === 'MergeSuccess')
+                clearInterval(threadTask);
         })
         .catch(err => {
             log('发生错误');

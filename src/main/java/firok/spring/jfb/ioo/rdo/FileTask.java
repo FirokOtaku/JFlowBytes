@@ -1,10 +1,12 @@
 package firok.spring.jfb.ioo.rdo;
 
 import firok.spring.jfb.constant.FileTaskStatusEnum;
+import firok.spring.jfb.constant.FileTaskTypeEnum;
 import firok.spring.jfb.constant.SliceUploadStatusEnum;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Arrays;
 import java.util.UUID;
@@ -12,7 +14,6 @@ import java.util.UUID;
 /**
  * 文件操作相关任务
  */
-@Data
 public class FileTask
 {
 	/**
@@ -24,16 +25,19 @@ public class FileTask
 	/**
 	 * 唯一任务id, 一般是一个uuid
 	 */
+	@Getter
 	private final String id;
 
 	/**
 	 * 原始文件名
 	 */
+	@Getter
 	private final String fileName;
 
 	/**
 	 * 文件大小
 	 */
+	@Getter
 	private final long fileSize;
 
 	/**
@@ -41,11 +45,24 @@ public class FileTask
 	 */
 	private final int sliceCount;
 
+	public int getSliceCount()
+	{
+		return type == FileTaskTypeEnum.Upload_Single_Big ? 1 : sliceCount;
+	}
+
 	/**
 	 * 切片大小
 	 */
+	@Getter
 	private final long sliceSize;
 
+	/**
+	 * 任务类型
+	 */
+	@Getter
+	private final FileTaskTypeEnum type;
+
+	@Getter
 	private CacheFolder folder;
 
 	/**
@@ -53,19 +70,21 @@ public class FileTask
 	 */
 	private final SliceUploadStatusEnum[] sliceStatus;
 
+	@Getter @Setter
 	private FileTaskStatusEnum taskStatus;
 
-	public FileTask(String fileName, long fileSize, long sliceSize, CacheFolder folder)
+	public FileTask(String fileName, long fileSize, long sliceSize, FileTaskTypeEnum type, CacheFolder folder)
 	{
-		this(UUID.randomUUID().toString(), fileName, fileSize, sliceSize, folder);
+		this(UUID.randomUUID().toString(), fileName, fileSize, sliceSize, type, folder);
 	}
-	public FileTask(String id, String fileName, long fileSize, long sliceSize, CacheFolder folder)
+	public FileTask(String id, String fileName, long fileSize, long sliceSize, FileTaskTypeEnum type, CacheFolder folder)
 	{
 		this.id = id;
 		this.fileName = fileName;
 		this.fileSize = fileSize;
 		this.sliceCount = (int) (fileSize / sliceSize + (fileSize % sliceSize == 0 ? 0 : 1));
 		this.sliceSize = sliceSize;
+		this.type = type;
 
 		this.sliceStatus = new SliceUploadStatusEnum[sliceCount];
 		Arrays.fill(sliceStatus, SliceUploadStatusEnum.NotUploaded); // 等待切片上传

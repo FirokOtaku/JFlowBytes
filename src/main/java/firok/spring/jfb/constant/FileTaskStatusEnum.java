@@ -21,7 +21,7 @@ public enum FileTaskStatusEnum
 	/**
 	 * 上传取消
 	 */
-	UploadCancel,
+	UploadError,
 
 	/**
 	 * 上传完成
@@ -46,22 +46,22 @@ public enum FileTaskStatusEnum
 	/**
 	 * 转码切片中
 	 */
-	Transforming,
+	Transcoding,
 
 	/**
 	 * 转码切片取消
 	 */
-	TransformError,
+	TranscodeError,
 
 	/**
 	 * 转码切片完成
 	 */
-	TransformSuccess,
+	TranscodeSuccess,
 
 	/**
 	 * 向 MinIO 服务器转移数据
 	 */
-	TransportMinio,
+	Transporting,
 
 	/**
 	 * 转移取消

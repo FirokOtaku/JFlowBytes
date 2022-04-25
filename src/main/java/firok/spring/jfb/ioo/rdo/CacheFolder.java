@@ -6,7 +6,7 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 
-public record CacheFolder(File folderBase, File folderSlice, File fileMerge, File folderTransform) implements Closeable
+public record CacheFolder(File folderBase, File folderSlice, File fileMerge, File folderTranscode) implements Closeable
 {
 	public File sliceOf(int sliceIndex)
 	{

@@ -37,7 +37,8 @@ public class UploadController
 			var task = service.createTask(
 					param.fileName(),
 					param.fileSize(),
-					param.sliceSize()
+					param.sliceSize(),
+					param.type()
 			);
 			return Ret.success(task);
 		}
