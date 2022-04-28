@@ -44,6 +44,7 @@ async function createTask(
             fileName,
             fileSize: file.size,
             sliceSize,
+            type: 'Video_Slice',
         },
     });
     const id = res.data.data.id;
@@ -62,13 +63,13 @@ async function createTask(
         })
         .then(res => {
             task.process = res.data.data.process;
-            if(task.process === 'MergeSuccess')
-                clearInterval(threadTask);
+            // if(task.process === 'MergeSuccess')
+            //     clearInterval(threadTask);
         })
         .catch(err => {
             log('发生错误');
         })
-    }, 500);
+    }, 2000);
 
 
     const task = {

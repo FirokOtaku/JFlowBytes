@@ -1,6 +1,30 @@
 
 # minio 连接相关
 app:
+  # 控制上传过程
+  service-upload:
+    enable: true
+    folder-cache: ./cache
+
+  # 控制转码切片过程
+  service-transcode:
+    path-ffmpeg: ./ffmpeg
+    path-ffprobe: ./ffprobe
+
+  # 控制存储过程
+  service-storage:
+    type: file-system
+
+    file-system:
+      folder-storage: ./storage
+    minio:
+      # minio 地址
+      url: http://192.168.19.115:29001
+      username: minio-server
+      password: minio-server-password-000*
+    oss:
+      url: none
+
   minio:
     # minio 地址
     url: http://192.168.19.115:29001
@@ -14,9 +38,9 @@ app:
     # 如果没有提供, 则自动从资源文件导出出一份能用的库文件到lib目录
     # 很可能这个最终只会面向windows系统进行操作
     # ffmpeg 可执行文件路径
-    ffmepg: ./ffmpeg
+    ffmpeg: ffmpeg
     # ffprobe 可执行文件路径
-    ffprobe: ./ffprobe
+    ffprobe: ffprobe
 
 server:
   port: 29011

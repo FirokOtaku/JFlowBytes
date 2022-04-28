@@ -1,4 +1,38 @@
 
+Vue.component('vjs', {
+    template: `<div style="width: 400px; height: 300px">
+    <video ref="vjs"
+    class="video-js" controls></video>
+</div>`,
+    props: {
+        options: {
+            type: Object,
+            default: () => {
+                return {}
+            },
+        },
+    },
+    data() {
+        return {
+            player: null,
+        };
+    },
+    mounted() {
+        this.player = videojs(
+            this.$refs['vjs'],
+            this.options,
+            ()=>{
+                console.log('vjs component mounted and ready');
+            }
+        );
+    },
+    beforeDestroy() {
+        if (this.player) {
+            this.player.dispose();
+        }
+    },
+});
+
 const app = new Vue({
     el: '#app',
     data: {
@@ -6,6 +40,17 @@ const app = new Vue({
         fileObject: null,
         hasStartUpload: false,
         taskUpload: null,
+
+        opt: {
+            autoplay: true,
+            controls: true,
+            sources: [
+                {
+                    src: 'http://localhost:29011/api/fs/minio/2699a00c-75b1-4f02-91f4-d0dc9c8d9de1.m3u8',
+                    type: 'application/x-mpegURL'
+                }
+            ]
+        }
     },
     computed: {
         fileName() {

@@ -3,6 +3,7 @@ package firok.spring.jfb.service_impl;
 import com.baomidou.mybatisplus.extension.service.IService;
 import firok.spring.jfb.bean.FileInfoBean;
 import firok.spring.jfb.config.CacheConfig;
+import firok.spring.jfb.config.FFmpegConfig;
 import firok.spring.jfb.config.MinioConfig;
 import firok.spring.jfb.constant.FileTaskStatusEnum;
 import firok.spring.jfb.constant.FileTaskTypeEnum;
@@ -10,18 +11,26 @@ import firok.spring.jfb.constant.SliceUploadStatusEnum;
 import firok.spring.jfb.ioo.rdo.FileTask;
 import firok.spring.jfb.ioo.vo.CreateFileTaskVO;
 import firok.spring.jfb.ioo.vo.QueryTaskVO;
+import firok.spring.jfb.util.NativeProcess;
+import io.minio.ListObjectsArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
+import io.minio.RemoveObjectArgs;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
+import org.bytedeco.javacv.FFmpegFrameGrabber;
+import org.bytedeco.javacv.FFmpegFrameRecorder;
+import org.bytedeco.javacv.Frame;
+import org.bytedeco.javacv.FrameRecorder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.net.URL;
+import java.util.*;
 
 @SuppressWarnings({"SpringJavaInjectionPointsAutowiringInspection", "SpringJavaAutowiredFieldsWarningInspection", "RedundantSuppression", "UnnecessaryLabelOnBreakStatement"})
 @Service
@@ -43,6 +52,9 @@ public class FileControllerService
 
 	@Autowired
 	MinioConfig configMinio;
+
+	@Autowired
+	FFmpegConfig configFFmpeg;
 
 	@Autowired
 	MinioClient client;
@@ -156,12 +168,19 @@ public class FileControllerService
 		{
 			try
 			{
-				// todo high 开始合并之前先检查一下当前状态
-				//           可能出现的情况是前次合并失败 这时需要删除前次没合并完的输出文件
-				//           不过需不需要检查是否所有分片文件都存在还是个问题
-				setTaskStatus(task, status = FileTaskStatusEnum.MergingSlice);
 				var folder = task.getFolder();
 				var fileMerge = folder.fileMerge();
+
+				// 检查当前状态是否是前次合并失败
+				// 如果为真 则清理前次没有合并完成的文件
+				// 但是不准备检查是否所有分片文件都存在 如果检查的话交互流程会麻烦很多
+				if(status == FileTaskStatusEnum.MergeError)
+				{
+					var resultDelete = fileMerge.delete();
+					System.out.println("删除前次合并失败文件结果: "+(resultDelete ? "成功" : "失败"));
+				}
+
+				setTaskStatus(task, status = FileTaskStatusEnum.MergingSlice);
 
 				try(var ofs = new FileOutputStream(fileMerge))
 				{
@@ -201,30 +220,96 @@ public class FileControllerService
 			case MergeSuccess, TranscodeError -> true;
 			default -> false;
 		};
-		if(allowTranscode) // 实际的转码代码开始
+
+		PROCESS_TRANSCODE: if(allowTranscode) // 实际的转码代码开始
 		{
-			// todo 检查现在的状态是否允许转码
-
 			// 调用ffmpeg 把合并后的文件作为视频文件转码切片为m3u8
+			var folder = task.getFolder();
+			var fileMerge = folder.fileMerge();
+			var folderTranscode = folder.folderTranscode();
+			var fileM3U8 = new File(folderTranscode, task.getId() + ".m3u8");
 
+			var needClean = status == FileTaskStatusEnum.TranscodeError;
+			setTaskStatus(task, status = FileTaskStatusEnum.Transcoding);
+
+			// 检查状态 如果需要就先清理前次转码失败的内容
+			if(needClean)
+			{
+				try
+				{
+					File[] listFileSlice =folder.listFileSlice();
+					for(File fileSlice : listFileSlice)
+					{
+						FileUtils.forceDelete(fileSlice);
+					}
+				}
+				catch (Exception e)
+				{
+					setTaskStatus(task, status = FileTaskStatusEnum.TranscodeError);
+					break PROCESS_TRANSCODE;
+				}
+			}
+
+			String pathMerge;
+			String pathM3U8;
+			try
+			{
+				pathMerge = fileMerge.getCanonicalPath();
+				pathM3U8 = fileM3U8.getCanonicalPath();
+			}
+			catch (IOException e)
+			{
+				setTaskStatus(task, status = FileTaskStatusEnum.TranscodeError);
+				break PROCESS_TRANSCODE;
+			}
+
+			var command = """
+                    %s -hwaccel auto -i "%s" -hls_time "2" -hls_segment_type "mpegts" -hls_segment_size "500000" -hls_allow_cache "1" -hls_list_size "0" -hls_flags "independent_segments" -c:v copy "%s"
+                    """.formatted(configFFmpeg.pathFFmpeg, pathMerge, pathM3U8);
+
+			try(var process = new NativeProcess(command))
+			{
+				int ret = process.waitFor();
+				if(ret != 0)
+				{
+					var contentErr = process.contentErr();
+					throw new RuntimeException("转码发生错误: \n"+contentErr);
+				}
+				status = FileTaskStatusEnum.TranscodeSuccess;
+			}
+			catch (Exception e)
+			{
+				status = FileTaskStatusEnum.TranscodeError;
+			}
+			finally
+			{
+				setTaskStatus(task, status);
+			}
 		}
 
 		// 检查任务状态是否允许开始上传服务器
 		final boolean allowUpload;
 		allowUpload = switch (type) {
 			case Video_Slice -> switch (status) { // 视频任务必须转码成功后才能上传
-				case TranscodeSuccess, UploadError -> true;
+				case TranscodeSuccess, TransportCancel -> true;
 				default -> false;
 			};
 			case Upload_Single_Big -> switch (status) { // 普通任务在合并完成后上传
-				case MergeSuccess, UploadError -> true;
+				case MergeSuccess, TransportCancel -> true;
 				default -> false;
 			};
 		};
 
-		if(allowUpload) // 实际的上传代码开始
+		PROCESS_UPLOAD: if(allowUpload) // 实际的上传代码开始
 		{
+			var needClean = status == FileTaskStatusEnum.TransportCancel;
 			setTaskStatus(task, status = FileTaskStatusEnum.Transporting);
+
+			if(needClean) // 清理MinIO
+			{
+				// todo 暂时没空写清理代码
+			}
+
 			class QueueNode // 笑嘻嘻 你看我想不想把这玩意写成静态的
 			{
 				/**
@@ -245,32 +330,32 @@ public class FileControllerService
 				int tries;
 			}
 			// 计算等待上传的文件列表
-			final int countSlice = task.getSliceCount();
 			var queueFileUpload = new java.util.LinkedList<QueueNode>();
 			var folder = task.getFolder();
+			var idTask = task.getId();
 			switch (type) // 根据任务类型不同 需要上传的文件不同
 			{
 				case Video_Slice: // 切片转码文件需要把一整个文件夹的内容上传
 				{
-					var folderTranscode = folder.folderTranscode();
-					var listTranscode = folderTranscode.listFiles();
-					if(listTranscode == null) // fixme 这种情况其实已经出错了 暂时没空做处理 后面会对这里做处理
-						listTranscode = new File[0];
+					var listTranscode = folder.listFileTranscode();
+					// fixme 如果出现列表长度为0 就其实已经出错了 暂时没空做处理 后面会对这里做处理
 
 					for(var fileTranscode : listTranscode)
 					{
 						var node = new QueueNode();
 						node.file = fileTranscode;
-						node.uploadFileName = ""; // todo 计算上传后的文件名
+						node.uploadFileName = fileTranscode.getName(); // todo 计算上传后的文件名
 						node.tries = 3;
+						queueFileUpload.add(node);
 					}
 					break;
 				}
 				case Upload_Single_Big: // 单文件直接上传
 				{
+					var fileMerge = folder.fileMerge();
 					var node = new QueueNode();
-					node.file = folder.fileMerge();
-					node.uploadFileName = ""; // todo 计算上传后的文件名
+					node.file = fileMerge;
+					node.uploadFileName = fileMerge.getName(); // todo 计算上传后的文件名
 					node.tries = 3;
 					queueFileUpload.add(node);
 					break;
@@ -282,10 +367,9 @@ public class FileControllerService
 			LOOP_QUEUE: while (true)
 			{
 				// 获取一个可用的上传任务节点
-				final int countNode = queueFileUpload.size();
 				if(queueFileUpload.isEmpty()) // 哦吼 都处理完了
 				{
-					status = FileTaskStatusEnum.UploadSuccess;
+					status = FileTaskStatusEnum.TransportSuccess;
 					break LOOP_QUEUE;
 				}
 				else // 还有剩下的
@@ -295,7 +379,7 @@ public class FileControllerService
 					--nodeCurrent.tries;
 					if(nodeCurrent.tries < 0) // 啧
 					{
-						status = FileTaskStatusEnum.TranscodeError;
+						status = FileTaskStatusEnum.TransportSuccess;
 						break LOOP_QUEUE;
 					}
 				}
@@ -367,4 +451,5 @@ public class FileControllerService
 		return true;
 	}
 }
+
 

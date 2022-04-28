@@ -4,6 +4,8 @@
     <meta charset="utf-8">
     <script src="axios.min.js"></script>
     <script src="vue.js"></script>
+    <link rel="stylesheet" href="video-js.css">
+    <script src="video.min.js"></script>
 </head>
 <body>
 
@@ -38,6 +40,16 @@
 
     <div>
         <button @click="stopUploadTask()">停止监听状态</button>
+    </div>
+
+    <div>
+        测试地址
+        <input type="text" v-model="opt.sources[0].src">
+    </div>
+
+    <div style="border: blue 1px solid">
+        vjs div
+        <vjs :options="opt"/>
     </div>
 
 </div>

@@ -4,7 +4,6 @@ import firok.spring.jfb.constant.FileTaskStatusEnum;
 import firok.spring.jfb.constant.FileTaskTypeEnum;
 import firok.spring.jfb.constant.SliceUploadStatusEnum;
 import lombok.AccessLevel;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
