@@ -17,10 +17,6 @@ import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import io.minio.RemoveObjectArgs;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
-import org.bytedeco.javacv.FFmpegFrameGrabber;
-import org.bytedeco.javacv.FFmpegFrameRecorder;
-import org.bytedeco.javacv.Frame;
-import org.bytedeco.javacv.FrameRecorder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -42,6 +38,8 @@ public class FileControllerService
 	 */
 	private final Map<String, FileTask> mapTask = new HashMap<>();
 
+	private static final boolean useMinio = false;
+	private static final boolean useQiniu = true;
 
 
 	@Autowired
@@ -58,6 +56,9 @@ public class FileControllerService
 
 	@Autowired
 	MinioClient client;
+
+	@Autowired
+	QiniuStorageService serviceQiniu;
 
 
 	/**
@@ -384,27 +385,48 @@ public class FileControllerService
 					}
 				}
 
-				// 处理该节点
-				try(var ifs = new FileInputStream(nodeCurrent.file))
+				if(useMinio)
 				{
-					// todo high 上传之前应该检查一下 MinIO 的状态
-					//           避免前次有没上传完的部分之类的情况
-					//           如果有这种情况就先删掉 MinIO 里的数据
-					var args = PutObjectArgs.builder()
-							.bucket(configMinio.nameBucket)
-							.contentType(MimeTypeUtils.APPLICATION_OCTET_STREAM_VALUE)
-							.stream(ifs, nodeCurrent.file.length(), -1)
-							.object(nodeCurrent.uploadFileName)
-							.build();
-					client.putObject(args);
+					// 处理该节点
+					try(var ifs = new FileInputStream(nodeCurrent.file))
+					{
+						// todo high 上传之前应该检查一下 MinIO 的状态
+						//           避免前次有没上传完的部分之类的情况
+						//           如果有这种情况就先删掉 MinIO 里的数据
+						var args = PutObjectArgs.builder()
+								.bucket(configMinio.nameBucket)
+								.contentType(MimeTypeUtils.APPLICATION_OCTET_STREAM_VALUE)
+								.stream(ifs, nodeCurrent.file.length(), -1)
+								.object(nodeCurrent.uploadFileName)
+								.build();
+						client.putObject(args);
+					}
+					catch (Exception e)
+					{
+						System.err.println("上传文件到 MinIO 时发生错误");
+						e.printStackTrace(System.err);
+						// 把节点再扔回队列
+						queueFileUpload.addLast(nodeCurrent);
+					}
 				}
-				catch (Exception e)
+				else if(useQiniu)
 				{
-					System.err.println("上传文件到 MinIO 时发生错误");
-					e.printStackTrace(System.err);
-					// 把节点再扔回队列
-					queueFileUpload.addLast(nodeCurrent);
+					// 处理该节点
+					try
+					{
+						serviceQiniu.upload(nodeCurrent.file);
+					}
+					catch (Exception e)
+					{
+						System.err.println("上传文件到 七牛云 时发生错误");
+						e.printStackTrace(System.err);
+						// 把节点再扔回队列
+						queueFileUpload.addLast(nodeCurrent);
+					}
 				}
+				else
+					throw new RuntimeException("未选中上传服务");
+
 			}
 			// 上传队列处理完成 将状态写回任务信息
 			setTaskStatus(task, status);

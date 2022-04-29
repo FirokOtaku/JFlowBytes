@@ -1,6 +1,8 @@
 package firok.spring.jfb.controller;
 
+import com.qiniu.common.QiniuException;
 import firok.spring.jfb.config.MinioConfig;
+import firok.spring.jfb.service_impl.QiniuStorageService;
 import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
 import io.minio.errors.*;
@@ -52,5 +54,14 @@ public class FileResController
 		{
 			obj.transferTo(os);
 		}
+	}
+
+	@Autowired
+	QiniuStorageService serviceQiniu;
+
+	@GetMapping("/qiniu/{key}")
+	public String qiniu(@PathVariable("key") String key) throws QiniuException
+	{
+		return serviceQiniu.urlPrivate(key);
 	}
 }

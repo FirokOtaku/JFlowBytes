@@ -10,7 +10,7 @@
     </parent>
     <groupId>firok.spring</groupId>
     <artifactId>jfb</artifactId>
-    <version>0.1.4</version>
+    <version>0.1.6</version>
     <name>JFlowBytes</name>
     <description>JFlowBytes</description>
     <properties>
@@ -61,6 +61,12 @@
         </dependency>
 
         <dependency>
+            <groupId>com.qiniu</groupId>
+            <artifactId>qiniu-java-sdk</artifactId>
+            <version>[7.7.0, 7.10.99]</version>
+        </dependency>
+
+        <dependency>
             <groupId>firok.spring</groupId>
             <artifactId>mvci</artifactId>
             <version>17.3.0</version>
@@ -83,12 +89,6 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.bytedeco</groupId>
-            <artifactId>javacv-platform</artifactId>
-            <version>1.5.7</version>
         </dependency>
 
     </dependencies>

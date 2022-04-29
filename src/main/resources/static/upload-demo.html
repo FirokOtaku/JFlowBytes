@@ -47,12 +47,21 @@
         <input type="text" v-model="opt.sources[0].src">
     </div>
 
-    <div style="border: blue 1px solid">
-        vjs div
-        <vjs :options="opt"/>
-    </div>
+<!--    <div style="border: blue 1px solid">-->
+<!--        vjs div-->
+<!--        <vjs :options="opt"/>-->
+<!--        -->
+<!--    </div>-->
+
 
 </div>
+
+<video-js id="vid1" controls class="vjs-fluid">
+    <source src="http://rb2uaos6l.hd-bkt.clouddn.com/442a0ac3-841d-402c-8de1-5801e2c8b9db.m3u8?pm3u8/0&e=1651213525195&token=K4AyEBRYQYDTY5Gx7BPIsQQib1aIE4MwXD7b83_P:bsn1TJco17PzwRk4S_DBxj93mow="/>
+</video-js>
+<script>
+    const player = videojs('vid1', {});
+</script>
 
 </body>
 <script src="upload-kit.js"></script>
