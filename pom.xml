@@ -10,7 +10,7 @@
     </parent>
     <groupId>firok.spring</groupId>
     <artifactId>jfb</artifactId>
-    <version>0.1.6</version>
+    <version>0.1.7</version>
     <name>JFlowBytes</name>
     <description>JFlowBytes</description>
     <properties>

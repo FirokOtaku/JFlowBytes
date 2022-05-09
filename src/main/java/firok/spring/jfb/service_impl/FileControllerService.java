@@ -3,7 +3,7 @@ package firok.spring.jfb.service_impl;
 import com.baomidou.mybatisplus.extension.service.IService;
 import firok.spring.jfb.bean.FileInfoBean;
 import firok.spring.jfb.config.CacheConfig;
-import firok.spring.jfb.config.FFmpegConfig;
+import firok.spring.jfb.config.FFmpegTranscodeConfig;
 import firok.spring.jfb.config.MinioConfig;
 import firok.spring.jfb.constant.FileTaskStatusEnum;
 import firok.spring.jfb.constant.FileTaskTypeEnum;
@@ -12,20 +12,16 @@ import firok.spring.jfb.ioo.rdo.FileTask;
 import firok.spring.jfb.ioo.vo.CreateFileTaskVO;
 import firok.spring.jfb.ioo.vo.QueryTaskVO;
 import firok.spring.jfb.util.NativeProcess;
-import io.minio.ListObjectsArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
-import io.minio.RemoveObjectArgs;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
-import java.net.URL;
 import java.util.*;
 
 @SuppressWarnings({"SpringJavaInjectionPointsAutowiringInspection", "SpringJavaAutowiredFieldsWarningInspection", "RedundantSuppression", "UnnecessaryLabelOnBreakStatement"})
@@ -52,7 +48,7 @@ public class FileControllerService
 	MinioConfig configMinio;
 
 	@Autowired
-	FFmpegConfig configFFmpeg;
+	FFmpegTranscodeConfig configFFmpeg;
 
 	@Autowired
 	MinioClient client;

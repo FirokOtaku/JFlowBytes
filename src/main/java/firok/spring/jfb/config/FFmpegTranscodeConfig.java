@@ -3,18 +3,19 @@ package firok.spring.jfb.config;
 import firok.spring.jfb.constant.PlatformType;
 import firok.spring.jfb.util.NativeProcess;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
-import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.util.Scanner;
 
+/**
+ * 使用 FFmpeg 对视频进行转码
+ */
+@ConditionalOnExpression("${app.service-transcode.ffmpeg-base.enable}")
 @Configuration
-public class FFmpegConfig
+public class FFmpegTranscodeConfig
 {
-	public FFmpegConfig()
+	public FFmpegTranscodeConfig()
 	{
 		if(!PlatformType.Windows.isCurrent())
 		{
@@ -22,18 +23,16 @@ public class FFmpegConfig
 		}
 	}
 
-	@Value("${app.lib.ffmpeg}")
+	@Value("${app.lib.ffmpeg-base.path-ffmpeg}")
 	public String pathFFmpeg;
 
-	@Value("${app.lib.ffprobe}")
+	@Value("${app.lib.ffmpeg-base.path-ffprobe}")
 	public String pathFFprobe;
-
-
 
 	/**
 	 * ffmpeg 版本信息
 	 */
-	public String versionFFmpeg = "";
+	public String versionFFmpeg = "unknown";
 
 	@PostConstruct
 	private void postConstruct()

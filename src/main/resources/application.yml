@@ -1,6 +1,13 @@
 
 # minio 连接相关
 app:
+  # 流程相关
+  flow:
+    # 流程根目录
+    folder-flow: ./cache
+    # 流程运行控制台日志
+    log-console: false
+
   # 控制上传过程
   service-upload:
     enable: true
@@ -8,22 +15,32 @@ app:
 
   # 控制转码切片过程
   service-transcode:
-    path-ffmpeg: ./ffmpeg
-    path-ffprobe: ./ffprobe
+    ffmpeg-base:
+      enable: true
+      path-ffmpeg: ./ffmpeg
+      path-ffprobe: ./ffprobe
+    ffmpeg-m3u8:
+      enable: true
 
   # 控制存储过程
   service-storage:
-    type: file-system
-
     file-system:
+      enable: true
+      # 文件系统的储存位置
       folder-storage: ./storage
     minio:
-      # minio 地址
+      enable: true
       url: http://192.168.19.115:29001
       username: minio-server
       password: minio-server-password-000*
-    oss:
-      url: none
+    qiniu:
+      enable: true
+      access-key: K4AyEBRYQYDTY5Gx7BPIsQQib1aIE4MwXD7b83_P
+      secret-key: lllhjhaQtIvXJXBo540Miw2VZzqT9Olf1o48kx6N
+      region: huadong
+      domain: "rb2uaos6l.hd-bkt.clouddn.com"
+      use-https: false
+      deadline: 3600
 
   minio:
     # minio 地址
