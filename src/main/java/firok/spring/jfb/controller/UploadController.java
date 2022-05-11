@@ -20,6 +20,7 @@ import java.util.concurrent.Callable;
  */
 @RestController
 @RequestMapping("/api/upload")
+@Deprecated
 public class UploadController
 {
 	@Autowired

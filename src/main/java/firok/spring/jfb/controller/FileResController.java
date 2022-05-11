@@ -20,6 +20,7 @@ import java.security.NoSuchAlgorithmException;
 @RestController
 @RequestMapping("/api/fs")
 @CrossOrigin(origins = "*")
+@Deprecated
 public class FileResController
 {
 	@GetMapping("/get/{name}")

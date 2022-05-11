@@ -19,6 +19,7 @@ import java.io.InputStream;
  * 与七牛云 OSS 储存交互
  */
 @Service
+@Deprecated
 public class QiniuStorageService
 {
 	static final String accessKey = "K4AyEBRYQYDTY5Gx7BPIsQQib1aIE4MwXD7b83_P";

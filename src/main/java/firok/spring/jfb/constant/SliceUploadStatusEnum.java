@@ -3,6 +3,7 @@ package firok.spring.jfb.constant;
 /**
  * 分片上传状态
  */
+@Deprecated
 public enum SliceUploadStatusEnum
 {
 	/**

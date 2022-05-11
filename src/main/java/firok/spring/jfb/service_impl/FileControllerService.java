@@ -3,7 +3,6 @@ package firok.spring.jfb.service_impl;
 import com.baomidou.mybatisplus.extension.service.IService;
 import firok.spring.jfb.bean.FileInfoBean;
 import firok.spring.jfb.config.CacheConfig;
-import firok.spring.jfb.config.FFmpegTranscodeConfig;
 import firok.spring.jfb.config.MinioConfig;
 import firok.spring.jfb.constant.FileTaskStatusEnum;
 import firok.spring.jfb.constant.FileTaskTypeEnum;
@@ -26,6 +25,7 @@ import java.util.*;
 
 @SuppressWarnings({"SpringJavaInjectionPointsAutowiringInspection", "SpringJavaAutowiredFieldsWarningInspection", "RedundantSuppression", "UnnecessaryLabelOnBreakStatement"})
 @Service
+@Deprecated
 public class FileControllerService
 {
 	private final Object LOCK = new Object();
@@ -47,8 +47,8 @@ public class FileControllerService
 	@Autowired
 	MinioConfig configMinio;
 
-	@Autowired
-	FFmpegTranscodeConfig configFFmpeg;
+//	@Autowired
+//	FFmpegTranscodeConfig configFFmpeg;
 
 	@Autowired
 	MinioClient client;
@@ -262,7 +262,7 @@ public class FileControllerService
 
 			var command = """
                     %s -hwaccel auto -i "%s" -hls_time "2" -hls_segment_type "mpegts" -hls_segment_size "500000" -hls_allow_cache "1" -hls_list_size "0" -hls_flags "independent_segments" -c:v copy "%s"
-                    """.formatted(configFFmpeg.pathFFmpeg, pathMerge, pathM3U8);
+                    """.formatted("./ffmpeg", pathMerge, pathM3U8);
 
 			try(var process = new NativeProcess(command))
 			{

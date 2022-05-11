@@ -13,6 +13,10 @@ app:
     enable: true
     folder-cache: ./cache
 
+  service-merge:
+    enable: true
+    filename-merge: file_merge.bin
+
   # 控制转码切片过程
   service-transcode:
     ffmpeg-base:
@@ -21,6 +25,7 @@ app:
       path-ffprobe: ./ffprobe
     ffmpeg-m3u8:
       enable: true
+      folder-transcode-m3u8: ./m3u8
 
   # 控制存储过程
   service-storage:

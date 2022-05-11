@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import java.io.File;
 import java.io.IOException;
 
+@Deprecated
 @Configuration
 public class CacheConfig
 {

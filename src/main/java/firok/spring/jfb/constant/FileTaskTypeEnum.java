@@ -3,6 +3,7 @@ package firok.spring.jfb.constant;
 /**
  * 文件任务类型
  */
+@Deprecated
 public enum FileTaskTypeEnum
 {
 	/**

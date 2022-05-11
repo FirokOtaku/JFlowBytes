@@ -6,6 +6,7 @@ package firok.spring.jfb.constant;
  * 详见 doc/task_file_upload.drawio
  */
 @SuppressWarnings("unused")
+@Deprecated
 public enum FileTaskStatusEnum
 {
 	/**

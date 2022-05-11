@@ -15,7 +15,7 @@ public class WorkflowContext extends HashMap<String, Object>
 	/**
 	 * 流程唯一id
 	 */
-	String id;
+	public final String id;
 
 	/**
 	 * 要进行的操作
@@ -30,7 +30,7 @@ public class WorkflowContext extends HashMap<String, Object>
 	/**
 	 * 此上下文相关根路径, 用于存放各种缓存数据
 	 */
-	File folderWorkflowRoot;
+	public final File folderWorkflowRoot;
 
 	public WorkflowContext(
 			String id,
