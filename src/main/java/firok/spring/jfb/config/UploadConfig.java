@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import java.io.File;
 
 @Deprecated
-@ConditionalOnExpression("${app.service-upload.enable}")
+//@ConditionalOnExpression("${app.service-upload.enable}")
 @Configuration
 public class UploadConfig
 {

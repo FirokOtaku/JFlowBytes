@@ -17,7 +17,7 @@ import java.io.OutputStream;
 /**
  * 基于 MinIO 的数据持久化实现
  */
-@ConditionalOnExpression("${app.service-storage.minio.enable}")
+//@ConditionalOnExpression("${app.service-storage.minio.enable}")
 @Service
 public class MinioStorageService implements IStorageIntegrative
 {

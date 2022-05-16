@@ -20,7 +20,7 @@ import java.net.URL;
 /**
  * 基于七牛云的数据持久化实现
  */
-@ConditionalOnExpression("${app.service-storage.qiniu.enable}")
+//@ConditionalOnExpression("${app.service-storage.qiniu.enable}")
 @Service
 public class QiniuStorageService implements IStorageIntegrative
 {

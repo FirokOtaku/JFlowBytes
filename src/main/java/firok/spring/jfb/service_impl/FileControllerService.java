@@ -41,7 +41,7 @@ public class FileControllerService
 	@Autowired
 	IService<FileInfoBean> serviceFileInfo;
 
-	@Autowired
+//	@Autowired
 	CacheConfig configCache;
 
 	@Autowired

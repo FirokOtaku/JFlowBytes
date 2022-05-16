@@ -1,9 +1,10 @@
-package firok.spring.jfb.bean;
+package firok.spring.jfb.flow;
 
 import firok.spring.jfb.service.IWorkflowService;
 
 import java.io.File;
 import java.util.*;
+import java.util.logging.Level;
 
 public class WorkflowContext extends HashMap<String, Object>
 {
@@ -22,10 +23,30 @@ public class WorkflowContext extends HashMap<String, Object>
 	 */
 	List<IWorkflowService> listOperation;
 
+	public IWorkflowService getCurrentOperation()
+	{
+		return this.currentOperationIndex >= 0 && this.currentOperationIndex < this.listOperation.size() ?
+				this.listOperation.get(this.currentOperationIndex) : null;
+	}
+
+	public boolean hasNextOperation()
+	{
+		return this.currentOperationIndex <= this.listOperation.size();
+	}
+
+	public IWorkflowService nextOperation()
+	{
+		this.currentOperationIndex ++;
+		return this.getCurrentOperation();
+	}
+
 	/**
-	 * 当前正在进行的操作
+	 * 当前正在进行的操作序列号
+	 * Integer.MIN_VALUE 表示未开始
+	 * Integer.MAX_VALUE 表示已结束
+	 * 其它数字表示正在进行的操作序列号
 	 */
-	IWorkflowService currentOperation;
+	int currentOperationIndex;
 
 	/**
 	 * 此上下文相关根路径, 用于存放各种缓存数据
@@ -41,8 +62,8 @@ public class WorkflowContext extends HashMap<String, Object>
 	{
 		super();
 		this.id = id;
-		this.listOperation = listOperation;
-		this.currentOperation = listOperation.isEmpty() ? null : listOperation.get(0);
+		this.listOperation = new ArrayList<>(listOperation);
+		this.currentOperationIndex = Integer.MIN_VALUE;
 		this.putAll(mapContextInitParam);
 		this.folderWorkflowRoot = folderWorkflowRoot;
 	}
@@ -84,4 +105,42 @@ public class WorkflowContext extends HashMap<String, Object>
 		else typeRequire = typeParam;
 		return Objects.equals(typeCurrent, typeRequire);
 	}
+
+	// todo 日志功能以后再做 现在没时间做日志
+	private final List<LogNode> listLog = new ArrayList<>(20);
+	private static class LogNode { Level level; String message; long time; public String toString() { return time + "|" + level + ": " + message; } }
+	public void log(Level level, Object obj)
+	{
+		if(obj == null) return;
+		var now = System.currentTimeMillis();
+		var msg = String.valueOf(obj);
+
+		var node = new LogNode();
+		node.level = level;
+		node.message = msg;
+		node.time = now;
+		synchronized (listLog)
+		{
+			listLog.add(node);
+		}
+
+		System.out.printf("[WF|%d|%s|%s]\n", now, this.id, msg);
+	}
+	public String contentLog()
+	{
+		var sb = new StringBuilder();
+
+		for(var log : listLog)
+			sb.append(log);
+
+		return sb.toString();
+	}
+
+	/**
+	 * 工作流相关线程
+	 * @deprecated 暂时没想好这个要不要这么处理
+	 * todo 可能会移除掉
+	 */
+	@Deprecated
+	public WorkflowThread thread;
 }

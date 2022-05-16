@@ -1,0 +1,110 @@
+<html lang="zh">
+<head>
+    <title>Flow demo</title>
+    <script src="flow-kit.js"></script>
+    <script src="vue.js"></script>
+</head>
+<body>
+
+<div id="app">
+    <div>
+        选择文件 <input type="file" ref="app-file" @change="changeFile()">
+    </div>
+    <div>{{ filename }} - {{ filesize }} B</div>
+    <div>
+        切片大小 <input type="number" v-model="sliceSize"> B
+    </div>
+    <div>
+        切片数量 {{ sliceCount }}
+    </div>
+    <div>
+        <button>创建 flow</button>
+    </div>
+
+    <hr>
+
+    <table style="width: 100%; text-align: center">
+        <thead>
+        <tr>
+            <th>
+                序列
+            </th>
+            <th>
+                文件名
+            </th>
+            <th>
+                文件大小
+            </th>
+            <th>
+                切片大小
+            </th>
+            <th>
+                切片数量
+            </th>
+            <th>
+                flow 状态
+            </th>
+            <th>
+                操作
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        <template v-if="listFlow.length">
+            <tr v-for="(flow, index) in listFlow">
+                <td>{{ index }}</td>
+                <td>{{ flow.fileName }}</td>
+                <td>{{ flow.fileSize }}</td>
+                <td>{{ flow.sliceSize }}</td>
+                <td>{{ flow.sliceCount }}</td>
+                <td>{{ flow.status }}</td>
+                <td>
+                    <button>更新状态</button>
+                    <button>中断</button>
+                </td>
+            </tr>
+        </template>
+        <tr v-else>
+            <td colspan="7">
+                flow 列表为空
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+<script>
+    const app = new Vue({
+        el: '#app',
+        data: {
+            file: null,
+            listFlow: [ {} ], // flow 列表
+            sliceSize: 5 * 1024 * 1024,
+        },
+        computed: {
+            filename()
+            {
+                const { file } = this;
+                return file?.name ?? 'unknown';
+            },
+            filesize()
+            {
+                const { file } = this;
+                return file?.size ?? 0;
+            },
+            sliceCount()
+            {
+                const { filesize, sliceSize } = this;
+                return Math.ceil(filesize / sliceSize);
+            }
+        },
+        methods: {
+            changeFile()
+            {
+                this.file = this.$refs['app-file'].files[0];
+            }
+        },
+    });
+</script>
+</html>

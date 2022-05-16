@@ -1,6 +1,6 @@
 package firok.spring.jfb.service_impl.merge;
 
-import firok.spring.jfb.bean.WorkflowContext;
+import firok.spring.jfb.flow.WorkflowContext;
 import firok.spring.jfb.service.ExceptionIntegrative;
 import firok.spring.jfb.service.IWorkflowService;
 import firok.spring.jfb.service.merge.IFileMergeService;

@@ -18,7 +18,7 @@ import java.io.InputStream;
 /**
  * 与七牛云 OSS 储存交互
  */
-@Service
+//@Service
 @Deprecated
 public class QiniuStorageService
 {

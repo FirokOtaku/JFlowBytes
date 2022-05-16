@@ -1,7 +1,6 @@
 package firok.spring.jfb.service;
 
-import firok.spring.jfb.bean.WorkflowContext;
-import firok.spring.jfb.service_impl.ContextKeys;
+import firok.spring.jfb.flow.WorkflowContext;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 
 import java.io.File;
@@ -60,10 +59,11 @@ public interface IWorkflowService
 	void operateWorkflow(WorkflowContext context) throws ExceptionIntegrative;
 
 	/**
-	 * 清理工作流上下文. 无论此操作成功完成还是失败完成, 都会立刻调用此方法`
+	 * 清理工作流上下文. 无论此操作成功完成还是失败完成, 都会立刻调用此方法
 	 * @param context 工作流上下文
 	 * @param isSuccess 本次清理操作是否发生于操作成功后
 	 * @throws ExceptionIntegrative 发生任何错误时都可抛出. 根据配置不同, 清理操作发生错误可能会导致任务失败
+	 * @implNote 由于部分处理器的具体实现, 导致任务处理阶段完成或失败后, 必须先执行清理过程, 再次运行才不会出现问题
 	 */
 	@SuppressWarnings("unchecked")
 	default void cleanWorkflow(WorkflowContext context, boolean isSuccess) throws ExceptionIntegrative
@@ -93,12 +93,22 @@ public interface IWorkflowService
 		}
 	}
 
+	/**
+	 * 把指定文件置入工作流上下文
+	 * @param context 工作流上下文
+	 * @param files 文件列表. 为null则清空变量
+	 */
 	default void setFileList(WorkflowContext context, File... files)
 	{
 		if(files == null) context.remove(KEY_FILES);
 		else context.put(KEY_FILES, files);
 	}
 
+	/**
+	 * 把指定文件置入工作流上下文的待清理列表
+	 * @param context 工作流上下文
+	 * @param files 文件列表
+	 */
 	@SuppressWarnings({"unchecked"})
 	default void addFileToCleanList(WorkflowContext context, File... files)
 	{

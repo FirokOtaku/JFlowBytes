@@ -10,9 +10,11 @@
     </parent>
     <groupId>firok.spring</groupId>
     <artifactId>jfb</artifactId>
-    <version>0.1.8</version>
+    <version>0.1.9</version>
     <name>JFlowBytes</name>
-    <description>JFlowBytes</description>
+    <url>https://github.com/351768593/JFlowBytes</url>
+    <description>A simple file processing system.</description>
+
     <properties>
         <java.version>17</java.version>
         <maven.compiler.target>17</maven.compiler.target>
@@ -96,6 +98,16 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>project.properties</include>
+                </includes>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -120,5 +132,15 @@
 <!--            </plugin>-->
         </plugins>
     </build>
+
+    <developers>
+        <developer>
+            <id>firok</id>
+            <name>Firok</name>
+            <email>firok@qq.com</email>
+            <url>https://firok.space</url>
+            <timezone>+8</timezone>
+        </developer>
+    </developers>
 
 </project>

@@ -10,7 +10,7 @@ import java.io.File;
 import java.io.IOException;
 
 @Deprecated
-@Configuration
+//@Configuration
 public class CacheConfig
 {
 	/**

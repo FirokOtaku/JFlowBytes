@@ -80,7 +80,7 @@ async function createTask(
 
 
     const fileSize = file.size;
-    const sliceCount = parseInt(fileSize / sliceSize + '') + (fileSize % sliceSize == 0 ? 0 : 1);
+    const sliceCount = parseInt(fileSize / sliceSize + '') + (fileSize % sliceSize === 0 ? 0 : 1);
     for(let sliceIndex = 0; sliceIndex < sliceCount; sliceIndex++)
     {
         // 计算切片的起始位置
