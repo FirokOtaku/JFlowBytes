@@ -16,10 +16,10 @@ public class FFmpegTranscodeService
 		}
 	}
 
-	@Value("${app.lib.ffmpeg-base.path-ffmpeg}")
+	@Value("${app.service-transcode.ffmpeg-base.path-ffmpeg}")
 	public String pathFFmpeg;
 
-	@Value("${app.lib.ffmpeg-base.path-ffprobe}")
+	@Value("${app.service-transcode.ffmpeg-base.path-ffprobe}")
 	public String pathFFprobe;
 
 	/**

@@ -24,3 +24,12 @@
 相关处理器不做任何处理, 仅循环检测工作流上下文状态.  
 没有上传完成前都会堵塞线程, 直到上传完成后才停止处理过程.
 
+## 如何新增工作流处理器种类
+
+所有工作流处理器类首先需要实现 `firok.spring.jfb.service.IWorkflowService` 接口.  
+实现接口需要注意的内容在接口类的 Javadoc 里有详细说明.
+
+之后, 只要在相关类增加 `@Service` 或其它注解,
+使得该类能够加载到 Spring 上下文即可.
+
+扫描过程实现在 `firok.spring.jfb.controller.FlowController.scanWorkflowServices` 方法.

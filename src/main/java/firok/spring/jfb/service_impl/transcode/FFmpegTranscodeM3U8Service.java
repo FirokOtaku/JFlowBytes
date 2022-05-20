@@ -4,6 +4,7 @@ import firok.spring.jfb.flow.WorkflowContext;
 import firok.spring.jfb.service.ExceptionIntegrative;
 import firok.spring.jfb.service.IWorkflowService;
 import firok.spring.jfb.service.transcode.ITranscodeM3U8Integrative;
+import firok.spring.jfb.service_impl.ContextKeys;
 import firok.spring.jfb.util.NativeProcess;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,8 @@ import static firok.spring.jfb.service_impl.ContextKeys.KEY_FILES;
 @Service
 public class FFmpegTranscodeM3U8Service extends FFmpegTranscodeService implements ITranscodeM3U8Integrative, IWorkflowService
 {
+	public static final String SERVICE_NAME = ContextKeys.PREFIX + "ffmpeg-transcode-m3u8";
+
 	@Value("${app.service-transcode.ffmpeg-m3u8.folder-transcode-m3u8}")
 	protected String folderM3U8;
 
@@ -44,7 +47,7 @@ public class FFmpegTranscodeM3U8Service extends FFmpegTranscodeService implement
 	@Override
 	public String getWorkflowServiceOperation()
 	{
-		return "ffmpeg_transcode_m3u8";
+		return SERVICE_NAME;
 	}
 
 	@Override
@@ -77,7 +80,7 @@ public class FFmpegTranscodeM3U8Service extends FFmpegTranscodeService implement
 
 		var command = """
                     %s -hwaccel auto -i "%s" -hls_time "2" -hls_segment_type "mpegts" -hls_segment_size "500000" -hls_allow_cache "1" -hls_list_size "0" -hls_flags "independent_segments" -c:v copy "%s"
-                    """.formatted("./ffmpeg", pathVideo, pathM3U8);
+                    """.formatted(super.pathFFmpeg, pathVideo, pathM3U8);
 
 		try(var process = new NativeProcess(command))
 		{
@@ -115,7 +118,7 @@ public class FFmpegTranscodeM3U8Service extends FFmpegTranscodeService implement
 			// 用指令创建本地线程对文件进行转码
 			var command = """
                     %s -hwaccel auto -i "%s" -hls_time "2" -hls_segment_type "mpegts" -hls_segment_size "500000" -hls_allow_cache "1" -hls_list_size "0" -hls_flags "independent_segments" -c:v copy "%s"
-                    """.formatted("./ffmpeg", pathFileMerge, pathFileM3U8);
+                    """.formatted(super.pathFFmpeg, pathFileMerge, pathFileM3U8);
 			try(var process = new NativeProcess(command))
 			{
 				int ret = process.waitFor();
@@ -125,13 +128,21 @@ public class FFmpegTranscodeM3U8Service extends FFmpegTranscodeService implement
 					throw new RuntimeException("转码发生错误: \n"+contentErr);
 				}
 			}
-
 			// 如果成功转码 删掉转码前的文件
 			IWorkflowService.super.addFileToCleanList(context, fileMerge);
 
 			// 更新上下文
+			var files = fileM3U8.getParentFile().listFiles();
+			if(files == null) files = new File[0];
+			context.put(KEY_FILES, files);
 			context.put(KEY_FOLDER_M3U8, folderM3U8);
 			context.put(KEY_FILE_M3U8, fileM3U8);
+		}
+		catch (InterruptedException e)
+		{
+			// 如果转码失败 删掉转码后目录所有内容
+			IWorkflowService.super.addFileToCleanList(context, folderM3U8);
+			throw new ExceptionIntegrative("用户取消工作流或转码线程中断", e);
 		}
 		catch (Exception e)
 		{

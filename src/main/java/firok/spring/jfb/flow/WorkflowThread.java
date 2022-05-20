@@ -28,7 +28,20 @@ public class WorkflowThread extends Thread
 		IWorkflowService service;
 		TICK_LOOP: while(context.hasNextOperation())
 		{
-			service = context.nextOperation();
+			context.nextOperation();
+			if(context.currentOperationIndex == context.listOperation.size())
+			{
+				context.log(Level.INFO, "工作流完成");
+				break TICK_LOOP;
+			}
+
+			service = context.getCurrentOperation();
+			if(service == null)
+			{
+				context.log(Level.SEVERE, "无法确定下一步工作流操作");
+				return;
+			}
+
 			// 检查上下文是否正确
 			var isContextSuitable = service.isWorkflowContextSuitable(context);
 			if(!isContextSuitable)
@@ -58,9 +71,23 @@ public class WorkflowThread extends Thread
 				e.printStackTrace(System.err);
 				isOperationSuccess = false;
 			}
+			finally
+			{
+				try
+				{
+					context.log(Level.INFO, "清理工作流开始");
+					service.cleanWorkflow(context, isOperationSuccess);
+					context.log(Level.INFO, "清理工作流完成");
+				}
+				catch (ExceptionIntegrative e)
+				{
+					context.log(Level.SEVERE, "清理工作流发生异常: " + e.getMessage());
+					break TICK_LOOP;
+				}
 
-			if(!isOperationSuccess)
-				break TICK_LOOP;
+				if(!isOperationSuccess)
+					break TICK_LOOP;
+			}
 		}
 		context.currentOperationIndex = Integer.MAX_VALUE;
 		context.log(Level.INFO, "工作流结束");

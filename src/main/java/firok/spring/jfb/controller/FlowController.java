@@ -6,8 +6,6 @@ import firok.spring.jfb.flow.WorkflowThread;
 import firok.spring.jfb.service.ExceptionIntegrative;
 import firok.spring.jfb.service.IWorkflowService;
 import firok.spring.jfb.service.upload.IUploadIntegrative;
-import firok.spring.jfb.service_impl.ContextKeys;
-import firok.spring.jfb.service_impl.upload.UploadService;
 import lombok.Data;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,8 +18,10 @@ import javax.annotation.PostConstruct;
 import java.io.File;
 import java.util.*;
 
+//@Component
 @RestController
 @RequestMapping("/api/workflow")
+//@PropertySource(value = "classpath:/application.yml")
 public class FlowController implements ApplicationContextAware
 {
 	private boolean hasFlowContextInit = false;
@@ -29,28 +29,31 @@ public class FlowController implements ApplicationContextAware
 	private final Set<String> setServiceName = new HashSet<>();
 
 	private final Object LOCK_WORKFLOW = new Object();
-	private final Map<String, WorkflowContext> listWorkflow = new HashMap<>();
+	private final Map<String, WorkflowContext> mapWorkflow = new HashMap<>();
 
+	/**
+	 * 扫描 Spring 上下文, 获取所有工作流处理器
+	 */
 	@PostConstruct
-	public void postConstruct() throws ExceptionIntegrative
+	public void scanWorkflowServices() throws ExceptionIntegrative
 	{
-		synchronized (this)
+		synchronized (LOCK_WORKFLOW)
 		{
 			if(hasFlowContextInit) return;
 
-			var mapServiceContext = context.getBeansOfType(IWorkflowService.class);
+			var mapServiceContext = context.getBeansOfType(IWorkflowService.class, true, true);
 
 			// 注册所有上下文提供的工作流处理器
 			for(var entryServiceContext : mapServiceContext.entrySet())
 			{
-				String nameServiceContext = entryServiceContext.getKey();
 				IWorkflowService serviceContext = entryServiceContext.getValue();
+				String nameServiceContext = serviceContext.getWorkflowServiceOperation();
 
 				if(setServiceName.contains(nameServiceContext))
 					throw new ExceptionIntegrative("无法注册重复的工作流处理器: "+nameServiceContext);
 
 				setServiceName.add(nameServiceContext);
-				mapServiceContext.put(nameServiceContext, serviceContext);
+				mapService.put(nameServiceContext, serviceContext);
 			}
 
 			hasFlowContextInit = true;
@@ -65,7 +68,7 @@ public class FlowController implements ApplicationContextAware
 		}
 	}
 
-	@Value("${folder-flow-root}")
+	@Value("${app.flow.folder-flow}")
 	File folderWorkflow;
 
 	/**
@@ -95,10 +98,47 @@ public class FlowController implements ApplicationContextAware
 		context.thread = thread;
 		synchronized (LOCK_WORKFLOW)
 		{
-			listWorkflow.put(context.id, context);
+			mapWorkflow.put(context.id, context);
 		}
 		thread.start();
 		return Ret.success(id);
+	}
+	@GetMapping("/list_current_workflow")
+	public Ret<?> listCurrentWorkflows()
+	{
+		var ret = new HashMap<String, String>();
+		synchronized (LOCK_WORKFLOW)
+		{
+			for(var entryWorkflow : mapWorkflow.entrySet())
+			{
+				var idWorkflow = entryWorkflow.getKey();
+				var workflow = entryWorkflow.getValue();
+				String currentOperation;
+				synchronized (workflow.LOCK)
+				{
+					currentOperation = workflow.getCurrentOperationName();
+				}
+				ret.put(idWorkflow, currentOperation);
+			}
+		}
+		return Ret.success(ret);
+	}
+
+	@DeleteMapping("/delete_workflow")
+	public Ret<?> deleteWorkflow(
+			@RequestParam("idWorkflow") String idWorkflow
+	)
+	{
+		WorkflowContext workflow;
+		synchronized (LOCK_WORKFLOW)
+		{
+			workflow = mapWorkflow.remove(idWorkflow);
+		}
+		if(workflow == null)
+			return Ret.fail("找不到指定工作流: "+idWorkflow);
+		// todo 工作流清理流程
+		workflow.thread.interrupt();
+		return Ret.success();
 	}
 
 	/**
@@ -109,15 +149,15 @@ public class FlowController implements ApplicationContextAware
 	@PostMapping("/service_upload_slice")
 	public Ret<?> workflow_uploadSlice(
 			@RequestParam("idWorkflow") String idWorkflow,
-			@RequestParam("locSlice") Integer locSlice,
-			MultipartFile fileSlice
+			@RequestParam("indexSlice") Integer indexSlice,
+			@RequestPart("file") MultipartFile fileSlice
 	)
 	{
 		WorkflowContext context;
 		// 检查是否存在指定工作流
 		synchronized (LOCK_WORKFLOW)
 		{
-			context = listWorkflow.get(idWorkflow);
+			context = mapWorkflow.get(idWorkflow);
 		}
 		if(context == null)
 			return Ret.fail("找不到指定工作流");
@@ -134,14 +174,13 @@ public class FlowController implements ApplicationContextAware
 		// 开始转移数据
 		try
 		{
-			var status = serviceUpload.uploadSlice(context, locSlice, fileSlice);
+			var status = serviceUpload.uploadSlice(context, indexSlice, fileSlice);
 			return Ret.success(status);
 		}
 		catch (ExceptionIntegrative e)
 		{
 			return Ret.fail(e.getMessage());
 		}
-
 	}
 
 	@Data
@@ -166,5 +205,16 @@ public class FlowController implements ApplicationContextAware
 	public void setApplicationContext(ApplicationContext context) throws BeansException
 	{
 		this.context = context;
+	}
+
+	@GetMapping("/list_workflow_service")
+	public Ret<Collection<String>> listWorkflowService()
+	{
+		List<String> list;
+		synchronized (LOCK_WORKFLOW)
+		{
+			list = new ArrayList<>(setServiceName);
+		}
+		return Ret.success(list);
 	}
 }

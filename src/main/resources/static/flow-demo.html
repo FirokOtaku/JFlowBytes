@@ -3,27 +3,149 @@
     <title>Flow demo</title>
     <script src="flow-kit.js"></script>
     <script src="vue.js"></script>
+    <script src="video.min.js"></script>
+    <script src="axios.min.js"></script>
+    <link rel="stylesheet" href="video-js.css">
+
+    <style>
+        body
+        {
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+        body table tbody
+        {
+            user-select: text;
+        }
+        button
+        {
+            user-select: none;
+        }
+        .c-gray
+        {
+            color: darkslategray
+        }
+        td
+        {
+            margin: 0;
+            border: lightgray solid 1px;
+        }
+        .half-table
+        {
+            margin: 0;
+            padding: 0;
+            width: 49%;
+            display: inline-block;
+        }
+    </style>
 </head>
 <body>
+<h3 id="main-title">上传和预览测试</h3>
+<hr>
+<div id="app" style="display: none" v-show="true">
 
-<div id="app">
-    <div>
-        选择文件 <input type="file" ref="app-file" @change="changeFile()">
-    </div>
-    <div>{{ filename }} - {{ filesize }} B</div>
-    <div>
-        切片大小 <input type="number" v-model="sliceSize"> B
-    </div>
-    <div>
-        切片数量 {{ sliceCount }}
-    </div>
-    <div>
-        <button>创建 flow</button>
+    <div style="line-height: 100%">
+        <table class="half-table">
+            <tr>
+                <td>选择文件</td>
+                <td>
+                    <input type="file" ref="app-file" @change="changeFile()">
+                </td>
+            </tr>
+            <tr>
+                <td>文件信息</td>
+                <td class="c-gray">
+                    {{ filename }} <br>
+                    {{ filesize }} B <br>
+                    {{ (filesize / 1024).toFixed(2) }} KB <br>
+                    {{ (filesize / 1024 / 1024).toFixed(2) }} MB <br>
+                </td>
+            </tr>
+            <tr>
+                <td>切片大小</td>
+                <td>
+                    <input type="number" v-model="sliceSize" min="10240" max="52428800"> B (10240~52428800) <br>
+                    {{ (sliceSize / 1024).toFixed(2) }} KB <br>
+                    {{ (sliceSize / 1024 / 1024).toFixed(2) }} MB <br>
+                </td>
+            </tr>
+            <tr>
+                <td>切片数量</td>
+                <td class="c-gray">
+                    {{ sliceCount }}
+                </td>
+            </tr>
+            <tr>
+                <td>上传桶</td>
+                <td>
+                    <div>
+                        <input type="text" v-model="inputPreview.nameBucket" placeholder="桶名称 不填默认使用'jfb'">
+                    </div>
+                    <div class="c-gray">
+                        上传到 <b>MinIO</b> 和 <b>文件储存</b> 时需要指定上传的桶名称. <br>
+                        <b>桶</b> 概念类似文件夹. <br>
+                        七牛云的桶空间暂时不能通过后台配置, 需要在网页端控制台手动配置. <br>
+                        目前上传至七牛云时固定使用 'firok-demo' 桶名称. <br>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <button @click="uploadFile('minio')">
+                        🧿 上传文件到 MinIO
+                    </button>
+                    <button @click="uploadFile('qiniu')">
+                        🌤 上传文件到七牛云
+                    </button>
+                    <button @click="uploadFile('filesystem')">
+                        📦 上传文件到文件储存
+                    </button>
+                    <br>
+                    <span class="c-gray">
+                    三种储存方式对用户基本透明
+                </span>
+                </td>
+            </tr>
+        </table>
+        <table class="half-table">
+            <tr>
+                <td>预览文件</td>
+                <td>
+                    <input type="text" placeholder="桶名称" v-model="inputPreview.nameBucket"> <br>
+                    <input type="text" placeholder="文件名称" v-model="inputPreview.nameFile">
+                </td>
+                <td>
+                    <button @click="changePreview('minio')">🧿 加载自 MinIO</button> <br>
+                    <button @click="changePreview('qiniu')">🌤 加载自七牛云</button> <br>
+                    <button @click="changePreview('filesystem')">📦 加载自文件储存</button>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3" class="c-gray">
+                    加载视频文件规则:  任务id + '.m3u8'
+                </td>
+            </tr>
+            <tr>
+                <td>当前预览</td>
+                <td colspan="2">
+                    {{ currentPreview }}
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <div style="height: 340px; width: 600px" id="dom-player-parent">
+                    </div>
+                </td>
+            </tr>
+        </table>
     </div>
 
     <hr>
 
-    <table style="width: 100%; text-align: center">
+    <table class="half-table" style="text-align: center">
+        <caption>前台任务列表</caption>
         <thead>
         <tr>
             <th>
@@ -39,28 +161,40 @@
                 切片大小
             </th>
             <th>
-                切片数量
+                上传目标
             </th>
             <th>
                 flow 状态
             </th>
+            <th>工作流 id</th>
             <th>
                 操作
             </th>
         </tr>
         </thead>
         <tbody>
-        <template v-if="listFlow.length">
-            <tr v-for="(flow, index) in listFlow">
+        <template v-if="listUpload.length">
+            <tr v-for="(flow, index) in listUpload" :key="flow.id">
                 <td>{{ index }}</td>
-                <td>{{ flow.fileName }}</td>
-                <td>{{ flow.fileSize }}</td>
+                <td>{{ flow.filename }}</td>
+                <td>{{ flow.filesize }}</td>
                 <td>{{ flow.sliceSize }}</td>
-                <td>{{ flow.sliceCount }}</td>
-                <td>{{ flow.status }}</td>
+                <td>{{ flow.target }}</td>
                 <td>
-                    <button>更新状态</button>
-                    <button>中断</button>
+                    <span v-if="flow.uploadCount === -1">上传完成</span>
+                    <span v-else-if="flow.uploadCount === -2">取消上传</span>
+                    <span v-else-if="flow.uploadCount === -3">上传失败</span>
+                    <span v-else-if="flow.uploadCount === -4">准备上传</span>
+                    <span v-else>
+                        {{ flow.sliceCount }} / {{ flow.uploadCount }}
+                    </span>
+                </td>
+                <td>{{ flow.idWorkflow }}</td>
+                <td>
+                    <button v-if="flow.uploadCount >= 0"
+                            @click="stopUpload(flow)">中止上传</button>
+                    <button v-if="flow.uploadCount < 0"
+                            @click="listUpload.splice(index, 1)">删除</button>
                 </td>
             </tr>
         </template>
@@ -71,40 +205,54 @@
         </tr>
         </tbody>
     </table>
+    <table class="half-table">
+        <caption>
+            <div>后台工作流列表</div>
+            <div style="color: #16379f">
+                <label for="cb-refresh-list-workflow">自动刷新列表</label>
+                <input type="checkbox"
+                       id="cb-refresh-list-workflow"
+                       v-model="shouldRefreshListWorkflow">
+            </div>
+            <button @click="refreshListWorkflow">刷新</button>
+        </caption>
+        <thead>
+        <tr>
+            <th>工作流id</th>
+            <th>工作流当前任务</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <template v-if="isRefreshingListWorkflow">
+            <tr>
+                <td colspan="4">正在加载工作流列表</td>
+            </tr>
+        </template>
+        <template v-else-if="listWorkflow.length">
+            <tr v-for="workflow in listWorkflow" :key="workflow.id">
+                <td> {{ workflow.id }} </td>
+                <td> {{ workflow.status }} </td>
+                <td> <button @click="deleteWorkflow(workflow.id)">删除</button> </td>
+            </tr>
+        </template>
+        <template v-else>
+            <tr>
+                <td colspan="4">当前后台工作流列表为空</td>
+            </tr>
+        </template>
+        </tbody>
+    </table>
 </div>
 
-</body>
 <script>
-    const app = new Vue({
-        el: '#app',
-        data: {
-            file: null,
-            listFlow: [ {} ], // flow 列表
-            sliceSize: 5 * 1024 * 1024,
-        },
-        computed: {
-            filename()
-            {
-                const { file } = this;
-                return file?.name ?? 'unknown';
-            },
-            filesize()
-            {
-                const { file } = this;
-                return file?.size ?? 0;
-            },
-            sliceCount()
-            {
-                const { filesize, sliceSize } = this;
-                return Math.ceil(filesize / sliceSize);
-            }
-        },
-        methods: {
-            changeFile()
-            {
-                this.file = this.$refs['app-file'].files[0];
-            }
-        },
-    });
+    const isLocal = window.location.href.toString().startsWith('file://');
+    if(isLocal)
+    {
+        document.title = '测试页面(本地模式)';
+        document.getElementById('main-title').innerText = '上传和预览测试 (本地模式. 此模式可能大部分功能不能正常运行)';
+    }
 </script>
+</body>
+<script src="flow-demo.js"></script>
 </html>

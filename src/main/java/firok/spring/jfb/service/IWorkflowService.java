@@ -68,7 +68,13 @@ public interface IWorkflowService
 	@SuppressWarnings("unchecked")
 	default void cleanWorkflow(WorkflowContext context, boolean isSuccess) throws ExceptionIntegrative
 	{
-		var listFileClean = (List<File>) context.get(KEY_CLEAN_FILES);
+		List<File> listFileClean = context.get(KEY_CLEAN_FILES) instanceof List list ? list : null;
+		if(listFileClean == null)
+		{
+			listFileClean = new ArrayList<>();
+			context.put(KEY_CLEAN_FILES, listFileClean);
+		}
+
 		// 清空文件
 		Iterator<File> iterator = listFileClean.iterator();
 		while (iterator.hasNext())

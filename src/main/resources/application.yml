@@ -4,14 +4,13 @@ app:
   # 流程相关
   flow:
     # 流程根目录
-    folder-flow: ./cache
+    folder-flow: ./flow
     # 流程运行控制台日志
     log-console: false
 
   # 控制上传过程
   service-upload:
     enable: true
-    folder-cache: ./cache
 
   service-merge:
     enable: true
@@ -21,8 +20,8 @@ app:
   service-transcode:
     ffmpeg-base:
       enable: true
-      path-ffmpeg: ./ffmpeg
-      path-ffprobe: ./ffprobe
+      path-ffmpeg: ffmpeg
+      path-ffprobe: ffprobe
     ffmpeg-m3u8:
       enable: true
       folder-transcode-m3u8: ./m3u8
@@ -43,7 +42,7 @@ app:
       access-key: K4AyEBRYQYDTY5Gx7BPIsQQib1aIE4MwXD7b83_P
       secret-key: lllhjhaQtIvXJXBo540Miw2VZzqT9Olf1o48kx6N
       region: huadong
-      domain: "rb2uaos6l.hd-bkt.clouddn.com"
+      domain: "rc3wj1b5q.hd-bkt.clouddn.com"
       use-https: false
       deadline: 3600
 

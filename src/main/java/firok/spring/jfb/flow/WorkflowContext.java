@@ -1,6 +1,7 @@
 package firok.spring.jfb.flow;
 
 import firok.spring.jfb.service.IWorkflowService;
+import firok.spring.jfb.service_impl.ContextKeys;
 
 import java.io.File;
 import java.util.*;
@@ -28,16 +29,26 @@ public class WorkflowContext extends HashMap<String, Object>
 		return this.currentOperationIndex >= 0 && this.currentOperationIndex < this.listOperation.size() ?
 				this.listOperation.get(this.currentOperationIndex) : null;
 	}
+	public String getCurrentOperationName()
+	{
+		if(this.currentOperationIndex == Integer.MIN_VALUE) return ContextKeys.CONTEXT_NOT_STARTED;
+		else if(this.currentOperationIndex == Integer.MAX_VALUE) return ContextKeys.CONTEXT_FINISHED;
+		else return Optional.ofNullable(this.getCurrentOperation())
+				.map(IWorkflowService::getWorkflowServiceOperation)
+				.orElse(ContextKeys.CONTEXT_UNKNOWN);
+	}
 
 	public boolean hasNextOperation()
 	{
 		return this.currentOperationIndex <= this.listOperation.size();
 	}
 
-	public IWorkflowService nextOperation()
+	public void nextOperation()
 	{
-		this.currentOperationIndex ++;
-		return this.getCurrentOperation();
+		if(currentOperationIndex == Integer.MIN_VALUE)
+			currentOperationIndex = 0;
+		else
+			this.currentOperationIndex ++;
 	}
 
 	/**

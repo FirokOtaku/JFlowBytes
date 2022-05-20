@@ -4,6 +4,7 @@ import firok.spring.jfb.flow.WorkflowContext;
 import firok.spring.jfb.service.ExceptionIntegrative;
 import firok.spring.jfb.service.IWorkflowService;
 import firok.spring.jfb.service.merge.IFileMergeService;
+import firok.spring.jfb.service_impl.ContextKeys;
 import firok.spring.jfb.util.EnumerationMultiFileInputStream;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -20,10 +21,12 @@ import static firok.spring.jfb.service_impl.ContextKeys.KEY_FILES;
 @Service
 public class FileMergeService implements IFileMergeService, IWorkflowService
 {
+	public static final String SERVICE_NAME = ContextKeys.PREFIX + "file-merge";
+
 	@Override
 	public String getWorkflowServiceOperation()
 	{
-		return "file_merge";
+		return SERVICE_NAME;
 	}
 
 	@Value("${app.service-merge.filename-merge:file_merge.bin}")

@@ -7,6 +7,14 @@ package firok.spring.jfb.service_impl;
  */
 public interface ContextKeys
 {
+	String PREFIX = "jfb:";
+
+	String CONTEXT_NOT_STARTED = PREFIX + "not_started";
+
+	String CONTEXT_FINISHED = PREFIX + "finished";
+
+	String CONTEXT_UNKNOWN = PREFIX + "unknown";
+
 	/**
 	 * 文件上传时的分片数量
 	 */
@@ -26,4 +34,9 @@ public interface ContextKeys
 	 * 要删除的文件列表 : {@code List<java.io.File> }
 	 */
 	String KEY_CLEAN_FILES = "clean_files";
+
+	/**
+	 * 要上传到什么桶下: String
+	 */
+	String KEY_NAME_BUCKET = "name_bucket";
 }

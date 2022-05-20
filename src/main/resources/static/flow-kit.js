@@ -10,7 +10,7 @@
 function* slicesOf(file, sliceSize = 1024 * 1024 * 5)
 {
     const fileSize = file.size;
-    const sliceCount = parseInt(fileSize / sliceSize + '') + (fileSize % sliceSize === 0 ? 0 : 1);
+    const sliceCount = Math.ceil(fileSize / sliceSize);
     for(let sliceIndex = 0; sliceIndex < sliceCount; sliceIndex++)
     {
         // 计算切片的起始位置
@@ -22,4 +22,71 @@ function* slicesOf(file, sliceSize = 1024 * 1024 * 5)
         yield filePart;
     }
 }
+
+/**
+ * 处理 firok.spring.bean.Ret 格式返回值
+ * */
+function _handleRet(res)
+{
+    const { data, success, msg } = res.data;
+    if(!success)
+        throw msg;
+    else
+        return data;
+}
+/**
+ * 发起一次网络请求
+ * */
+function _axiosRequest(param)
+{
+    return new Promise((resolve, reject) => {
+        axios(param)
+        .then(res => resolve(_handleRet(res)))
+        .catch(reject);
+    });
+}
+
+const API = {
+
+    async createWorkflow({ listOperation, mapContextInitParam, })
+    {
+        return _axiosRequest({
+            method: 'post',
+            url: '/api/workflow/create_workflow',
+            data: {
+                listOperation,
+                mapContextInitParam,
+            },
+        });
+    },
+
+    async deleteWorkflow(idWorkflow)
+    {
+        return _axiosRequest({
+            url: '/api/workflow/delete_workflow',
+            method: 'delete',
+            params: { idWorkflow, },
+        });
+    },
+
+    async listCurrentWorkflows()
+    {
+        return _axiosRequest({
+            url: '/api/workflow/list_current_workflow',
+            method: 'get',
+        });
+    },
+
+    async serviceUploadSlice({ idWorkflow, indexSlice, slice, })
+    {
+        const form = new FormData();
+        form.append('file', slice);
+        return _axiosRequest({
+            url: '/api/workflow/service_upload_slice',
+            method: 'post',
+            params: { idWorkflow, indexSlice },
+            data: form,
+        });
+    },
+};
 

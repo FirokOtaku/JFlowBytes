@@ -5,6 +5,7 @@ import firok.spring.jfb.flow.WorkflowContext;
 import firok.spring.jfb.service.ExceptionIntegrative;
 import firok.spring.jfb.service.IWorkflowService;
 import firok.spring.jfb.service.storage.IStorageIntegrative;
+import firok.spring.jfb.service_impl.ContextKeys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -19,13 +20,15 @@ import static firok.spring.jfb.service_impl.ContextKeys.KEY_FILES;
 @ThreadSafe
 public class FileSystemStorageService implements IStorageIntegrative, IWorkflowService
 {
+	public static final String SERVICE_NAME = ContextKeys.PREFIX + "filesystem-storage";
+
 	@Value("${app.service-storage.file-system.folder-storage}")
-	public File folderStorage = new File("./storage");
+	public File folderStorage;
 
 	@Override
 	public String getWorkflowServiceOperation()
 	{
-		return "jfb:file-system-storage";
+		return SERVICE_NAME;
 	}
 
 	@Override
@@ -33,6 +36,7 @@ public class FileSystemStorageService implements IStorageIntegrative, IWorkflowS
 	{
 		var ret = IWorkflowService.super.getWorkflowParamContext();
 		ret.put(KEY_FILES, File[].class);
+		ret.put(ContextKeys.KEY_NAME_BUCKET, String.class);
 		return ret;
 	}
 
@@ -75,10 +79,10 @@ public class FileSystemStorageService implements IStorageIntegrative, IWorkflowS
 	{
 		// gossip 那么文件列表长度为0的情况要不要做处理是个问题
 		var listFile = context.get(KEY_FILES) instanceof File[] files ? files : new File[0];
-
+		var nameBucket = String.valueOf(context.get(ContextKeys.KEY_NAME_BUCKET));
 		for (var file : listFile)
 		{
-			storeByFile("", file);
+			storeByFile(nameBucket, file);
 		}
 	}
 }

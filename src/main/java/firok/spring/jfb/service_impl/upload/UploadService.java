@@ -1,7 +1,6 @@
 package firok.spring.jfb.service_impl.upload;
 
 
-import firok.spring.jfb.bean.Ret;
 import firok.spring.jfb.flow.WorkflowContext;
 import firok.spring.jfb.service.ExceptionIntegrative;
 import firok.spring.jfb.service.IWorkflowService;
@@ -16,8 +15,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
 
-import static firok.spring.jfb.service_impl.ContextKeys.KEY_COUNT_SLICE;
-import static firok.spring.jfb.service_impl.ContextKeys.KEY_STATUS_SLICE;
+import static firok.spring.jfb.service_impl.ContextKeys.*;
 
 /**
  * 工作流处理器 - 文件上传阶段 <br>
@@ -38,7 +36,7 @@ import static firok.spring.jfb.service_impl.ContextKeys.KEY_STATUS_SLICE;
 @Service
 public class UploadService implements IUploadIntegrative, IWorkflowService
 {
-	public static final String SERVICE_NAME = "upload";
+	public static final String SERVICE_NAME = ContextKeys.PREFIX + "upload";
 
 	@Override
 	public String getWorkflowServiceOperation()
@@ -60,8 +58,8 @@ public class UploadService implements IUploadIntegrative, IWorkflowService
 		synchronized (context.LOCK)
 		{
 			// 检查指定分片是否上传完成
-			boolean[] statusSlice = context.get(ContextKeys.KEY_STATUS_SLICE) instanceof boolean[] status ? status : null;
-			Integer countSlice = context.get(ContextKeys.KEY_COUNT_SLICE) instanceof Integer count ? count : null;
+			boolean[] statusSlice = context.get(KEY_STATUS_SLICE) instanceof boolean[] status ? status : null;
+			Integer countSlice = context.get(KEY_COUNT_SLICE) instanceof Integer count ? count : null;
 			File[] listFiles = context.get(ContextKeys.KEY_FILES) instanceof File[] files ? files : null;
 
 			if(statusSlice == null || countSlice == null || listFiles == null || listFiles.length != statusSlice .length || statusSlice.length != countSlice)
@@ -73,9 +71,9 @@ public class UploadService implements IUploadIntegrative, IWorkflowService
 
 			var cacheSlice = new File(context.folderWorkflowRoot, "slice_" + sliceIndex);
 			listFiles[sliceIndex] = cacheSlice;
-
 			if(cacheSlice.exists())
 				cacheSlice.delete();
+			cacheSlice.getParentFile().mkdirs();
 
 			try(
 				var ifs = fileSlice.getInputStream();
@@ -98,8 +96,9 @@ public class UploadService implements IUploadIntegrative, IWorkflowService
 	{
 		synchronized (context.LOCK)
 		{
-			var status = (boolean[]) context.get(KEY_STATUS_SLICE); // fixme low 其实这里有可能出现类型转换错误 暂时不管了
-			for(var statusSlice : status) // fixme low 这里也有可能空指针错误
+			// fixme 这个地方的写法可能需要改一下 如果没找到上下文里的status列表就报错
+			var status = context.get(KEY_STATUS_SLICE) instanceof boolean[] arr ? arr : new boolean[] { false };
+			for(var statusSlice : status)
 			{
 				// 如果有任何一个分片没上传成功
 				if(!statusSlice)
@@ -111,14 +110,29 @@ public class UploadService implements IUploadIntegrative, IWorkflowService
 		}
 	}
 
-	@SuppressWarnings("BusyWait")
+	@SuppressWarnings({"BusyWait", "unchecked"})
 	@Override
 	public void operateWorkflow(WorkflowContext context) throws ExceptionIntegrative
 	{
-		int countSlice = (Integer) context.get(KEY_COUNT_SLICE);
-		var status = (boolean[]) context.get(KEY_STATUS_SLICE);
-		if(status == null || status.length != countSlice)
-			throw new ExceptionIntegrative("上传文件分片状态列表长度不正确");
+		int countSlice;
+		synchronized (context.LOCK)
+		{
+			countSlice = context.get(KEY_COUNT_SLICE) instanceof Integer count ? count : -1;
+		}
+		if(countSlice < 0)
+			throw new ExceptionIntegrative("上传文件分片参数不正确");
+		var status = new boolean[countSlice];
+		var files = new File[countSlice];
+		for(int step = 0; step < countSlice; step++)
+			files[step] = new File(context.folderWorkflowRoot, "slice_" + step + ".bin");
+
+		synchronized (context.LOCK)
+		{
+			context.put(KEY_STATUS_SLICE, status);
+			context.put(KEY_FILES, files);
+		}
+
+		Exception exception = null;
 
 		// 阻塞当前线程 持续检查上下文状态
 		while (!hasAllSliceUploaded(context))
@@ -129,15 +143,12 @@ public class UploadService implements IUploadIntegrative, IWorkflowService
 			}
 			catch (InterruptedException e)
 			{
-				throw new ExceptionIntegrative("用户取消上传或上传监控线程中断", e);
+				exception = e;
+				break;
 			}
 		}
-	}
 
-	@Override
-	public void cleanWorkflow(WorkflowContext context, boolean isSuccess) throws ExceptionIntegrative
-	{
-		if(isSuccess)
+		if(exception == null)
 		{
 			// 分片数量和状态列表用不到了
 			context.remove(KEY_COUNT_SLICE);
@@ -147,8 +158,11 @@ public class UploadService implements IUploadIntegrative, IWorkflowService
 		// 这种情况下把所有已经上传的分片删掉就行
 		else
 		{
-			int countSlice = (Integer) context.get(KEY_COUNT_SLICE);
-
+			IWorkflowService.super.addFileToCleanList(
+					context,
+					files
+			);
+			throw new ExceptionIntegrative("用户取消上传或上传监控线程中断", exception);
 		}
 	}
 }
