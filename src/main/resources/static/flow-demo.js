@@ -69,7 +69,7 @@ const app = new Vue({
                         url: `/api/storage/qiniu/space_public/${nameBucket}/${nameFile}`,
                         method: 'get',
                     });
-                    url = res.data;
+                    url = res.data.data;
                     break;
             }
 

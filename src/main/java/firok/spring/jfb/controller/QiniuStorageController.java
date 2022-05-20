@@ -1,6 +1,7 @@
 package firok.spring.jfb.controller;
 
 import com.qiniu.common.QiniuException;
+import firok.spring.jfb.bean.Ret;
 import firok.spring.jfb.service_impl.storage.QiniuStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -20,26 +21,39 @@ public class QiniuStorageController
 	QiniuStorageService service;
 
 	@GetMapping("/space_private/{nameBucket}/{nameFile}")
-	public String spacePrivate(
+	public Ret<String> spacePrivate(
 			@PathVariable("nameBucket") String nameBucket,
 			@PathVariable("nameFile") String nameFile
 	) throws QiniuException
 	{
-		return service.urlPrivate(nameFile);
+		try
+		{
+			// 先不考虑私有m3u8的情况了
+			var urlAuth = service.urlPrivate(nameBucket, nameFile, false);
+			return Ret.success(urlAuth);
+		}
+		catch (Exception e)
+		{
+			return Ret.fail(e.getMessage());
+		}
 	}
 
 	@SuppressWarnings("HttpUrlsUsage")
 	@GetMapping("/space_public/{nameBucket}/{nameFile}")
-	public String spacePublic(
+	public Ret<String> spacePublic(
 			@PathVariable("nameBucket") String nameBucket,
 			@PathVariable("nameFile") String nameFile
 	)
 	{
-		return MessageFormat.format(
-				"http://{0}/{1}",
-				service.domain,
-				nameFile
-		);
+		try
+		{
+			var url = service.urlPublic(nameBucket, nameFile);
+			return Ret.success(url);
+		}
+		catch (Exception e)
+		{
+			return Ret.fail(e.getMessage());
+		}
 	}
 
 }

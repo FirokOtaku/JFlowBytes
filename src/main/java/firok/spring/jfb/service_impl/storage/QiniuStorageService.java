@@ -6,6 +6,7 @@ import com.qiniu.storage.Region;
 import com.qiniu.storage.UploadManager;
 import com.qiniu.util.Auth;
 import com.qiniu.util.StringMap;
+import firok.spring.jfb.bean.Ret;
 import firok.spring.jfb.flow.WorkflowContext;
 import firok.spring.jfb.service.ExceptionIntegrative;
 import firok.spring.jfb.service.IWorkflowService;
@@ -20,6 +21,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.text.MessageFormat;
 import java.util.Map;
 
 /**
@@ -37,52 +39,87 @@ public class QiniuStorageService implements IStorageIntegrative, IWorkflowServic
 	@Value("${app.service-storage.qiniu.secret-key}")
 	public String secretKey;
 
+	record BucketInfo(
+			String nameBucket,
+			String domain,
+			Region region,
+			boolean useHttps,
+			int deadline,
+			UploadManager uploadManager
+	) { }
 
-	public Region nameRegion;
-	@Value("${app.service-storage.qiniu.region}")
-	public void setNameRegion(String str)
+	Map<String, BucketInfo> mapBuckets;
+	@Value("${app.service-storage.qiniu.buckets}")
+	public void setMapBuckets(Map<String, Map<String, String>> configBucket)
 	{
-		nameRegion = getRegionByName(str);
+		for(var entry : configBucket.entrySet())
+		{
+			var nameBucket = entry.getKey();
+			var infoBucket = entry.getValue();
+			var domain = String.valueOf(infoBucket.get("domain"));
+			var region = getRegionByName(String.valueOf(infoBucket.get("region")));
+			var useHttps = Boolean.parseBoolean(String.valueOf(infoBucket.get("useHttps")));
+			var deadline = Integer.parseInt(String.valueOf(infoBucket.get("deadline")));
+			var cfg = new com.qiniu.storage.Configuration(Region.huadong());
+			var managerUpload = new UploadManager(cfg);
+			var info = new BucketInfo(nameBucket, domain, region, useHttps, deadline, managerUpload);
+			mapBuckets.put(nameBucket, info);
+		}
+	}
+	BucketInfo getBucket(String nameBucket)
+	{
+		var bucketInfo = mapBuckets.get(nameBucket);
+		if(bucketInfo == null)
+			throw new IllegalArgumentException("找不到指定桶, 请在配置文件中配置");
+		return bucketInfo;
 	}
 
 	public Auth auth;
-	public UploadManager managerUpload;
-
-	@Value("${app.service-storage.qiniu.domain}")
-	public String domain;
-
-	@Value("${app.service-storage.qiniu.use-https}")
-	public boolean useHttps;
-
-	@Value("${app.service-storage.qiniu.deadline}")
-	public int deadline;
-
 	@PostConstruct
 	protected void postConstruct()
 	{
 		auth = Auth.create(accessKey, secretKey);
-		var cfg = new com.qiniu.storage.Configuration(Region.huadong());
-		managerUpload = new UploadManager(cfg);
 	}
 
 	protected static Region getRegionByName(String name)
 	{
 		return switch (name)
-				{
-					case "huadong" -> Region.huadong();
-					case "huabei" -> Region.huabei();
-					// todo 更多区域
-					default -> null;
-				};
+		{
+			case "huadong" -> Region.huadong();
+			case "huadongZheJiang2" -> Region.huadongZheJiang2();
+			case "qvmHuadong" -> Region.qvmHuadong();
+			case "huabei" -> Region.huabei();
+			case "qvmHuabei" -> Region.qvmHuabei();
+			case "huanan" -> Region.huanan();
+			case "beimei" -> Region.beimei();
+			case "xinjiapo" -> Region.xinjiapo();
+			case "fogCnEast1" -> Region.regionFogCnEast1();
+			default -> Region.autoRegion(); // 默认用自动域名
+		};
 	}
 
-	// todo 可能要改写法
-	public String urlPrivate(String key) throws QiniuException
+	@SuppressWarnings("HttpUrlsUsage")
+	public String urlPrivate(String nameBucket, String nameFile, boolean withPM3U8)
 	{
-		var url = "http://rb2uaos6l.hd-bkt.clouddn.com/" + key + "?pm3u8/0/expires/43200";
-		return auth.privateDownloadUrl(url, 36000);
-//		var url = new DownloadUrl("rb2uaos6l.hd-bkt.clouddn.com", false, key);
-//		return url.buildURL(auth, 36000);
+		var bucketInfo = getBucket(nameBucket);
+		var urlOrigin = MessageFormat.format(
+				"http://{0}/{1}{2}",
+				bucketInfo.domain,
+				nameFile,
+				withPM3U8 ? "?pm3u8/0/expires/43200" : ""
+		);
+		return auth.privateDownloadUrl(urlOrigin, bucketInfo.deadline);
+	}
+
+	@SuppressWarnings("HttpUrlsUsage")
+	public String urlPublic(String nameBucket, String nameFile)
+	{
+		var bucketInfo = getBucket(nameBucket);
+		return MessageFormat.format(
+				"http://{0}/{1}",
+				bucketInfo.domain,
+				nameFile
+		);
 	}
 
 	@Override
@@ -90,9 +127,10 @@ public class QiniuStorageService implements IStorageIntegrative, IWorkflowServic
 	{
 		try
 		{
+			var bucketInfo = getBucket(nameBucket);
 			var token = auth.uploadToken(nameBucket);
 			var params = new StringMap();
-			managerUpload.put(is, nameObject, token, params, MimeTypeUtils.APPLICATION_OCTET_STREAM_VALUE);
+			bucketInfo.uploadManager.put(is, nameObject, token, params, MimeTypeUtils.APPLICATION_OCTET_STREAM_VALUE);
 		}
 		catch (Exception e)
 		{
@@ -105,8 +143,9 @@ public class QiniuStorageService implements IStorageIntegrative, IWorkflowServic
 	{
 		try
 		{
-			var du = new DownloadUrl(domain, useHttps, nameObject);
-			var du2 = du.buildURL(auth, deadline);
+			var bucketInfo = getBucket(nameBucket);
+			var du = new DownloadUrl(bucketInfo.domain, bucketInfo.useHttps, nameObject);
+			var du2 = du.buildURL(auth, bucketInfo.deadline);
 			var url = new URL(du2);
 			try(var is = url.openStream())
 			{
