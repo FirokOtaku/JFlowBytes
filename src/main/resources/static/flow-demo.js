@@ -11,7 +11,7 @@ function clear(list)
 
 const app = new Vue({
     el: '#app',
-    component: { VueVideoPlayer },
+    component: { },
     data: {
         file: null,
         sliceSize: 5 * 1024 * 1024,
@@ -100,6 +100,11 @@ const app = new Vue({
             const { inputPreview } = this;
             const { nameBucket, nameFile } = inputPreview;
             const { file, filename, filesize, sliceSize, sliceCount } = this;
+            if(file == null)
+            {
+                alert('未选中文件');
+                return;
+            }
             const flow = {
                 id: new Date().getTime(),
                 idWorkflow: '',
@@ -127,10 +132,15 @@ const app = new Vue({
                         "jfb:file-merge",
                         "jfb:ffmpeg-transcode-m3u8",
                         `jfb:${target}-storage`,
+                        "jfb:record",
                     ],
                     mapContextInitParam: {
                         'name_bucket': nameBucket.length ? nameBucket : 'jfb',
                         'count_slice': sliceCount,
+                        // 下面这仨是记录器用的参数
+                        'name_target': target,
+                        'file_name': filename,
+                        'file_size': filesize,
                     },
                 });
                 flow.idWorkflow = idWorkflow;

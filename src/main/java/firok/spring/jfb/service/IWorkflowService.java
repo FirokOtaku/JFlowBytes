@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
+import java.util.logging.Level;
 
 import static firok.spring.jfb.service_impl.ContextKeys.KEY_CLEAN_FILES;
 import static firok.spring.jfb.service_impl.ContextKeys.KEY_FILES;
@@ -45,7 +46,10 @@ public interface IWorkflowService
 			var nameParam = entryParam.getKey();
 			var typeParam = entryParam.getValue();
 			if(!context.hasParamOfType(nameParam, typeParam))
+			{
+				context.log(Level.FINE, "工作流上下文参数缺失或类型错误: " + nameParam);
 				return false;
+			}
 		}
 		return true;
 	}

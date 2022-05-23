@@ -22,11 +22,11 @@ public interface IStorageIntegrative
 	default void storeByFile(String nameBucket, File file) throws ExceptionIntegrative
 	{
 		String nameObject = file.getName();
-		try
+		try(var ifs = new FileInputStream(file))
 		{
-			store(nameBucket, nameObject, new FileInputStream(file));
+			store(nameBucket, nameObject, ifs);
 		}
-		catch (FileNotFoundException e)
+		catch (Throwable e)
 		{
 			throw new ExceptionIntegrative(e);
 		}

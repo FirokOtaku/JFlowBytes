@@ -114,7 +114,7 @@ public class WorkflowContext extends HashMap<String, Object>
 		// 那这系统有没有用都是问题
 		else if(typeParam == void.class) typeRequire = null;
 		else typeRequire = typeParam;
-		return Objects.equals(typeCurrent, typeRequire);
+		return typeRequire != null && typeCurrent != null && typeRequire.isAssignableFrom(typeCurrent);
 	}
 
 	// todo 日志功能以后再做 现在没时间做日志

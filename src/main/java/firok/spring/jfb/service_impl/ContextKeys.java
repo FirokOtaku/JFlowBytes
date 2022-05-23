@@ -39,4 +39,9 @@ public interface ContextKeys
 	 * 要上传到什么桶下: String
 	 */
 	String KEY_NAME_BUCKET = "name_bucket";
+
+	/**
+	 * 要上传到什么持久化储存: String
+	 * */
+	String KEY_TARGET = "name_target";
 }

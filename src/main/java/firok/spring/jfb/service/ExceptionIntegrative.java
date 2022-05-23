@@ -5,11 +5,11 @@ package firok.spring.jfb.service;
  */
 public class ExceptionIntegrative extends Exception
 {
-	public ExceptionIntegrative(String message, Exception inner)
+	public ExceptionIntegrative(String message, Throwable inner)
 	{
 		super(message, inner);
 	}
-	public ExceptionIntegrative(Exception inner)
+	public ExceptionIntegrative(Throwable inner)
 	{
 		super(inner);
 	}

@@ -1,12 +1,14 @@
 package firok.spring.jfb.service_impl.storage;
 
-import com.qiniu.common.QiniuException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.qiniu.storage.DownloadUrl;
 import com.qiniu.storage.Region;
 import com.qiniu.storage.UploadManager;
 import com.qiniu.util.Auth;
 import com.qiniu.util.StringMap;
-import firok.spring.jfb.bean.Ret;
+import firok.spring.jfb.config.BucketInfo;
 import firok.spring.jfb.flow.WorkflowContext;
 import firok.spring.jfb.service.ExceptionIntegrative;
 import firok.spring.jfb.service.IWorkflowService;
@@ -22,6 +24,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.text.MessageFormat;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -39,33 +42,29 @@ public class QiniuStorageService implements IStorageIntegrative, IWorkflowServic
 	@Value("${app.service-storage.qiniu.secret-key}")
 	public String secretKey;
 
-	record BucketInfo(
-			String nameBucket,
-			String domain,
-			Region region,
-			boolean useHttps,
-			int deadline,
-			UploadManager uploadManager
-	) { }
-
 	Map<String, BucketInfo> mapBuckets;
 	@Value("${app.service-storage.qiniu.buckets}")
-	public void setMapBuckets(Map<String, Map<String, String>> configBucket)
+	public void setMapBuckets(String raw) throws JsonProcessingException
 	{
-		for(var entry : configBucket.entrySet())
+		mapBuckets = new HashMap<>();
+		var om = new ObjectMapper();
+		var json = (ObjectNode) om.readTree(raw);
+		var iterElements = json.fieldNames();
+		while(iterElements.hasNext())
 		{
-			var nameBucket = entry.getKey();
-			var infoBucket = entry.getValue();
-			var domain = String.valueOf(infoBucket.get("domain"));
-			var region = getRegionByName(String.valueOf(infoBucket.get("region")));
-			var useHttps = Boolean.parseBoolean(String.valueOf(infoBucket.get("useHttps")));
-			var deadline = Integer.parseInt(String.valueOf(infoBucket.get("deadline")));
+			var nameBucket = iterElements.next();
+			var obj = (ObjectNode) json.get(nameBucket);
+			var domain = obj.get("domain").asText();
+			var region = getRegionByName(obj.get("region").asText());
+			var useHttps = obj.get("use-https").asBoolean();
+			var deadline = obj.get("deadline").asInt();
 			var cfg = new com.qiniu.storage.Configuration(Region.huadong());
 			var managerUpload = new UploadManager(cfg);
 			var info = new BucketInfo(nameBucket, domain, region, useHttps, deadline, managerUpload);
 			mapBuckets.put(nameBucket, info);
 		}
 	}
+
 	BucketInfo getBucket(String nameBucket)
 	{
 		var bucketInfo = mapBuckets.get(nameBucket);
@@ -104,11 +103,11 @@ public class QiniuStorageService implements IStorageIntegrative, IWorkflowServic
 		var bucketInfo = getBucket(nameBucket);
 		var urlOrigin = MessageFormat.format(
 				"http://{0}/{1}{2}",
-				bucketInfo.domain,
+				bucketInfo.domain(),
 				nameFile,
 				withPM3U8 ? "?pm3u8/0/expires/43200" : ""
 		);
-		return auth.privateDownloadUrl(urlOrigin, bucketInfo.deadline);
+		return auth.privateDownloadUrl(urlOrigin, bucketInfo.deadline());
 	}
 
 	@SuppressWarnings("HttpUrlsUsage")
@@ -117,7 +116,7 @@ public class QiniuStorageService implements IStorageIntegrative, IWorkflowServic
 		var bucketInfo = getBucket(nameBucket);
 		return MessageFormat.format(
 				"http://{0}/{1}",
-				bucketInfo.domain,
+				bucketInfo.domain(),
 				nameFile
 		);
 	}
@@ -130,7 +129,7 @@ public class QiniuStorageService implements IStorageIntegrative, IWorkflowServic
 			var bucketInfo = getBucket(nameBucket);
 			var token = auth.uploadToken(nameBucket);
 			var params = new StringMap();
-			bucketInfo.uploadManager.put(is, nameObject, token, params, MimeTypeUtils.APPLICATION_OCTET_STREAM_VALUE);
+			bucketInfo.uploadManager().put(is, nameObject, token, params, MimeTypeUtils.APPLICATION_OCTET_STREAM_VALUE);
 		}
 		catch (Exception e)
 		{
@@ -144,8 +143,8 @@ public class QiniuStorageService implements IStorageIntegrative, IWorkflowServic
 		try
 		{
 			var bucketInfo = getBucket(nameBucket);
-			var du = new DownloadUrl(bucketInfo.domain, bucketInfo.useHttps, nameObject);
-			var du2 = du.buildURL(auth, bucketInfo.deadline);
+			var du = new DownloadUrl(bucketInfo.domain(), bucketInfo.useHttps(), nameObject);
+			var du2 = du.buildURL(auth, bucketInfo.deadline());
 			var url = new URL(du2);
 			try(var is = url.openStream())
 			{

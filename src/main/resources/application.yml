@@ -4,7 +4,7 @@ app:
   # 流程相关
   flow:
     # 流程根目录
-    folder-flow: ./flow
+    folder-flow: V:\flow_temp\temp
     # 流程运行控制台日志
     log-console: false
 
@@ -31,7 +31,7 @@ app:
     file-system:
       enable: true
       # 文件系统的储存位置
-      folder-storage: ./storage
+      folder-storage: V:\flow_temp\storage
     minio:
       enable: true
       url: http://192.168.19.115:29001
@@ -41,19 +41,8 @@ app:
       enable: true
       access-key: K4AyEBRYQYDTY5Gx7BPIsQQib1aIE4MwXD7b83_P
       secret-key: lllhjhaQtIvXJXBo540Miw2VZzqT9Olf1o48kx6N
-      buckets: {firok-test-public: {region: huadong, domain: "rc3wj1b5q.hd-bkt.clouddn.com", use-https: false, deadline: 36000}}
-#      buckets:
-#        firok-test-public:
-#          region: huadong
-#          domain: "rc3wj1b5q.hd-bkt.clouddn.com"
-#          use-https: false
-#          deadline: 36000
-#        demo-firok:
-#          region: huadong
-#          domain: "rb2uaos6l.hd-bkt.clouddn.com"
-#          use-https: false
-#          deadline: 36000
-
+      # 为什么这么写捏 因为找了半天都没跑通注入实体的办法
+      buckets: '{"firok-test-public":{"region":"huadong","domain":"rc3wj1b5q.hd-bkt.clouddn.com","use-https":false,"deadline":36000},"demo-firok":{"region":"huadong","domain":"rb2uaos6l.hd-bkt.clouddn.com","use-https":false,"deadline":36000}}'
 
 server:
   port: 29011
@@ -68,10 +57,10 @@ spring:
 #    url: jdbc:mysql://192.168.80.167:3306/sdyzt?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf8&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull
 #    username: root
 #    password: root
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://192.168.80.103:5432/chengyang?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf8&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull
-    username: postgres
-    password: postgres
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/jfb?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf8&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull
+    username: root
+    password: root
     type: com.zaxxer.hikari.HikariDataSource
     hikari:
       minimum-idle: 5
@@ -89,3 +78,6 @@ spring:
     multipart:
       max-file-size: 2048MB
       max-request-size: 2048MB
+
+mybatis-plus:
+
