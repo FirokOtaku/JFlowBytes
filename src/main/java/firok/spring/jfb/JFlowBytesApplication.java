@@ -44,9 +44,16 @@ public class JFlowBytesApplication
 		System.out.printf("%s v%s by %s\n", name, version, author);
 	}
 
+	static org.springframework.context.ConfigurableApplicationContext contextSpringBoot;
+
+	public static void stop()
+	{
+		contextSpringBoot.close();
+	}
+
 	public static void main(String[] args)
 	{
-		SpringApplication.run(JFlowBytesApplication.class, args);
+		contextSpringBoot = SpringApplication.run(JFlowBytesApplication.class, args);
 	}
 
 }

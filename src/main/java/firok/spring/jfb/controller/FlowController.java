@@ -7,6 +7,7 @@ import firok.spring.jfb.service.ExceptionIntegrative;
 import firok.spring.jfb.service.IWorkflowService;
 import firok.spring.jfb.service.upload.IUploadIntegrative;
 import lombok.Data;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -15,13 +16,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.io.File;
 import java.util.*;
 
-//@Component
 @RestController
 @RequestMapping("/api/workflow")
-//@PropertySource(value = "classpath:/application.yml")
 public class FlowController implements ApplicationContextAware
 {
 	private boolean hasFlowContextInit = false;
@@ -30,6 +30,30 @@ public class FlowController implements ApplicationContextAware
 
 	private final Object LOCK_WORKFLOW = new Object();
 	private final Map<String, WorkflowContext> mapWorkflow = new HashMap<>();
+
+	@PreDestroy
+	void preDestroy()
+	{
+		System.out.println("开始清理工作流");
+		int countSuccess = 0, countFail = 0;
+		synchronized (LOCK_WORKFLOW)
+		{
+			for(var workflow : mapWorkflow.values())
+			{
+				try
+				{
+					stopWorkflow(workflow);
+					countSuccess++;
+				}
+				// todo 有空再说吧
+				catch (Exception ignored)
+				{
+					countFail++;
+				}
+			}
+		}
+		System.out.printf("工作流清理完成. 成功 %d 个, 失败 %d 个\n", countSuccess, countFail);
+	}
 
 	/**
 	 * 扫描 Spring 上下文, 获取所有工作流处理器
@@ -136,9 +160,22 @@ public class FlowController implements ApplicationContextAware
 		}
 		if(workflow == null)
 			return Ret.fail("找不到指定工作流: "+idWorkflow);
-		// todo 工作流清理流程
-		workflow.thread.interrupt();
-		return Ret.success();
+
+		try // 清理工作流目录
+		{
+			stopWorkflow(workflow);
+			return Ret.success();
+		}
+		catch (Exception e)
+		{
+			return Ret.fail("工作流已移除自队列, 但清理时工作目录时发生错误. 这通常不影响系统运行, 但可能需要手动清理: " + workflow.id);
+		}
+	}
+
+	private void stopWorkflow(WorkflowContext context) throws Exception
+	{
+		context.thread.interrupt();
+		FileUtils.forceDelete(context.folderWorkflowRoot);
 	}
 
 	/**

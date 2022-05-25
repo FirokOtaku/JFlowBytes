@@ -119,7 +119,7 @@ public class UploadService implements IUploadIntegrative, IWorkflowService
 		{
 			countSlice = context.get(KEY_COUNT_SLICE) instanceof Integer count ? count : -1;
 		}
-		if(countSlice < 0)
+		if(countSlice <= 0)
 			throw new ExceptionIntegrative("上传文件分片参数不正确");
 		var status = new boolean[countSlice];
 		var files = new File[countSlice];
