@@ -32,7 +32,7 @@ import java.util.Map;
  */
 //@ConditionalOnExpression("${app.service-storage.qiniu.enable}")
 @Service
-public class QiniuStorageService implements IStorageIntegrative, IWorkflowService
+public class QiniuStorageIntegrative implements IStorageIntegrative, IWorkflowService
 {
 	public static final String SERVICE_NAME = ContextKeys.PREFIX + "qiniu-storage";
 

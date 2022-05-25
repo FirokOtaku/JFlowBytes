@@ -18,7 +18,7 @@ import static firok.spring.jfb.service_impl.ContextKeys.KEY_FILES;
 //@ConditionalOnExpression("${app.service-storage.file-system.enable}")
 @Service
 @ThreadSafe
-public class FileSystemStorageService implements IStorageIntegrative, IWorkflowService
+public class FileSystemStorageIntegrative implements IStorageIntegrative, IWorkflowService
 {
 	public static final String SERVICE_NAME = ContextKeys.PREFIX + "filesystem-storage";
 
@@ -77,12 +77,6 @@ public class FileSystemStorageService implements IStorageIntegrative, IWorkflowS
 	@Override
 	public void operateWorkflow(WorkflowContext context) throws ExceptionIntegrative
 	{
-		// gossip 那么文件列表长度为0的情况要不要做处理是个问题
-		var listFile = context.get(KEY_FILES) instanceof File[] files ? files : new File[0];
-		var nameBucket = String.valueOf(context.get(ContextKeys.KEY_NAME_BUCKET));
-		for (var file : listFile)
-		{
-			storeByFile(nameBucket, file);
-		}
+		StorageTransferUtil.transfer(this, context);
 	}
 }

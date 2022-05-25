@@ -7,7 +7,7 @@ import java.io.File;
 /**
  * 合并文件
  */
-public interface IFileMergeService
+public interface IFileMergeIntegrative
 {
 	/**
 	 * @param files 文件列表

@@ -34,7 +34,7 @@ import static firok.spring.jfb.service_impl.ContextKeys.*;
  * @author Firok
  */
 @Service
-public class UploadService implements IUploadIntegrative, IWorkflowService
+public class UploadIntegrative implements IUploadIntegrative, IWorkflowService
 {
 	public static final String SERVICE_NAME = ContextKeys.PREFIX + "upload";
 

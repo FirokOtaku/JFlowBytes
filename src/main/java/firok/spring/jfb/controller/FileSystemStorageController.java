@@ -1,6 +1,6 @@
 package firok.spring.jfb.controller;
 
-import firok.spring.jfb.service_impl.storage.FileSystemStorageService;
+import firok.spring.jfb.service_impl.storage.FileSystemStorageIntegrative;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.core.io.FileSystemResource;
@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
 
-@ConditionalOnBean(FileSystemStorageService.class)
+@ConditionalOnBean(FileSystemStorageIntegrative.class)
 @RestController
 @RequestMapping("/api/storage/filesystem")
 public class FileSystemStorageController
 {
 	@Autowired
-	FileSystemStorageService service;
+	FileSystemStorageIntegrative service;
 
 	@GetMapping("/read/{nameBucket}/{nameFile}")
 	public FileSystemResource read(

@@ -2,7 +2,7 @@ package firok.spring.jfb.controller;
 
 import com.qiniu.common.QiniuException;
 import firok.spring.jfb.bean.Ret;
-import firok.spring.jfb.service_impl.storage.QiniuStorageService;
+import firok.spring.jfb.service_impl.storage.QiniuStorageIntegrative;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,15 +10,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.text.MessageFormat;
-
-@ConditionalOnBean(QiniuStorageService.class)
+@ConditionalOnBean(QiniuStorageIntegrative.class)
 @RestController
 @RequestMapping("/api/storage/qiniu")
 public class QiniuStorageController
 {
 	@Autowired
-	QiniuStorageService service;
+	QiniuStorageIntegrative service;
 
 	@GetMapping("/space_private/{nameBucket}/{nameFile}")
 	public Ret<String> spacePrivate(

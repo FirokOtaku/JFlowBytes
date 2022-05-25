@@ -28,7 +28,7 @@ import java.util.Map;
 @Service
 @EnableTransactionManagement
 @SuppressWarnings({"SpringJavaAutowiredMembersInspection", "SpringJavaInjectionPointsAutowiringInspection", "SpringJavaAutowiredFieldsWarningInspection"})
-public class RecordService implements IRecordIntegrative, IWorkflowService
+public class RecordIntegrative implements IRecordIntegrative, IWorkflowService
 {
 	public static final String SERVICE_NAME = ContextKeys.PREFIX + "record";
 
@@ -49,6 +49,7 @@ public class RecordService implements IRecordIntegrative, IWorkflowService
 		ret.put(KEY_FILE_SIZE, Number.class);
 		ret.put(ContextKeys.KEY_NAME_BUCKET, String.class);
 		ret.put(ContextKeys.KEY_TARGET, String.class);
+		ret.put(ContextKeys.KEY_FILES, File[].class);
 		return ret;
 	}
 

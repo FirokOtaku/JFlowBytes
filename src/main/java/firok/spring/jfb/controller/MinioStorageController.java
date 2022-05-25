@@ -1,6 +1,6 @@
 package firok.spring.jfb.controller;
 
-import firok.spring.jfb.service_impl.storage.MinioStorageService;
+import firok.spring.jfb.service_impl.storage.MinioStorageIntegrative;
 import io.minio.GetObjectArgs;
 import io.minio.errors.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,13 +17,13 @@ import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
-@ConditionalOnBean(MinioStorageService.class)
+@ConditionalOnBean(MinioStorageIntegrative.class)
 @RestController
 @RequestMapping("/api/storage/minio")
 public class MinioStorageController
 {
 	@Autowired
-	MinioStorageService service;
+	MinioStorageIntegrative service;
 
 	@GetMapping("/read/{nameBucket}/{nameFile}")
 	public void read(

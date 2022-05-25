@@ -23,7 +23,7 @@ import java.util.Map;
  */
 //@ConditionalOnExpression("${app.service-storage.minio.enable}")
 @Service
-public class MinioStorageService implements IStorageIntegrative, IWorkflowService
+public class MinioStorageIntegrative implements IStorageIntegrative, IWorkflowService
 {
 	public static final String SERVICE_NAME = ContextKeys.PREFIX + "minio-storage";
 

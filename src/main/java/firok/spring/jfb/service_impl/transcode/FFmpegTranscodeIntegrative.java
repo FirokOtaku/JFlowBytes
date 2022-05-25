@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.PostConstruct;
 
-public class FFmpegTranscodeService
+public class FFmpegTranscodeIntegrative
 {
-	public FFmpegTranscodeService()
+	public FFmpegTranscodeIntegrative()
 	{
 		if(!PlatformType.Windows.isCurrent())
 		{
@@ -30,7 +30,7 @@ public class FFmpegTranscodeService
 	@PostConstruct
 	private void postConstruct()
 	{
-		synchronized (FFmpegTranscodeService.class)
+		synchronized (FFmpegTranscodeIntegrative.class)
 		{
 			if(versionFFmpeg != null) return;
 

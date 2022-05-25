@@ -10,35 +10,50 @@ app:
 
   # 控制上传过程
   service-upload:
+    # 是否启用此工作流处理器
     enable: true
 
   service-merge:
+    # 是否启用此工作流处理器
     enable: true
     filename-merge: file_merge.bin
 
   # 控制转码切片过程
   service-transcode:
     ffmpeg-base:
+      # 是否启用此工作流处理器的子类
       enable: true
+      # 调用 ffmpeg 的命令
       path-ffmpeg: ffmpeg
+      # 调用 ffprobe 的命令
       path-ffprobe: ffprobe
     ffmpeg-m3u8:
+      # 是否启用此工作流处理器
       enable: true
+      # 转码切片后输出到的目录 相对于工作流根目录的相对路径
       folder-transcode-m3u8: ./m3u8
 
   # 控制存储过程
   service-storage:
+    # 文件系统持久化存储
     file-system:
+      # 是否启用此工作流处理器
       enable: true
       # 文件系统的储存位置
       folder-storage: V:\flow_temp\storage
+    # MinIO 持久化存储
     minio:
+      # 是否启用此工作流处理器
       enable: true
+      # minio 地址和用户名信息
       url: http://192.168.19.115:29001
       username: minio-server
       password: minio-server-password-000*
+    # 七牛云持久化存储
     qiniu:
+      # 是否启用此工作流处理器
       enable: true
+      # 七牛云连接密钥
       access-key: K4AyEBRYQYDTY5Gx7BPIsQQib1aIE4MwXD7b83_P
       secret-key: lllhjhaQtIvXJXBo540Miw2VZzqT9Olf1o48kx6N
       # 为什么这么写捏 因为找了半天都没跑通注入实体的办法
@@ -78,6 +93,3 @@ spring:
     multipart:
       max-file-size: 2048MB
       max-request-size: 2048MB
-
-mybatis-plus:
-

@@ -15,6 +15,7 @@ class StorageTransferUtil
 		String nameBucket;
 		synchronized (context.LOCK)
 		{
+			// gossip 那么文件列表长度为0的情况要不要做处理是个问题
 			files = context.get(ContextKeys.KEY_FILES) instanceof File[] f ? f : null;
 			nameBucket = String.valueOf(context.get(ContextKeys.KEY_NAME_BUCKET));
 		}

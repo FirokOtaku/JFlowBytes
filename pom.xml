@@ -10,7 +10,7 @@
     </parent>
     <groupId>firok.spring</groupId>
     <artifactId>jfb</artifactId>
-    <version>0.1.13</version>
+    <version>0.1.14</version>
     <name>JFlowBytes</name>
     <url>https://github.com/351768593/JFlowBytes</url>
     <description>A simple file processing system.</description>
