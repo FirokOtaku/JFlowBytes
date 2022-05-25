@@ -1,10 +1,11 @@
-# JFlowBytes (Java Flow Bytes)
+# JFB - Java Flow Bytes
 
 > 数据怎样来?  
 > 数据怎样处理?  
 > 数据怎样去?
 
-一个后台动态工作流实现, 目前扩展了部分文件持久化存储功能.
+一个后台动态工作流实现, 用于维护长时任务.  
+目前扩展了部分文件数据持久化存储功能.
 
 * 普通文件上传
 * 视频文件转码切片上传
@@ -19,6 +20,10 @@
 * [各工作流处理器描述](doc/workflow_integrative_description.md)
 * ~~[最初的业务流程图](doc/task_file_upload.drawio)~~
   部分内容已经失效
+  * [DrawIO Diagrams - Microsoft Store](https://apps.microsoft.com/store/detail/drawio-diagrams/9MVVSZK43QQW)
+  * [DrawIO Diagrams Online](https://app.diagrams.net/)
+
+项目启动后访问 `http://{host}:{port}/` 会自动跳转到示例上传页面.
 
 ## 依赖
 
