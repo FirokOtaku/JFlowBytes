@@ -1,9 +1,6 @@
 package firok.spring.jfb.service_impl.record;
 
-import com.baomidou.mybatisplus.core.incrementer.IdentifierGenerator;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import firok.spring.jfb.bean.UploadRecordBean;
 import firok.spring.jfb.bean.UploadSliceBean;
 import firok.spring.jfb.flow.WorkflowContext;
@@ -11,6 +8,7 @@ import firok.spring.jfb.service.ExceptionIntegrative;
 import firok.spring.jfb.service.IWorkflowService;
 import firok.spring.jfb.service.record.IRecordIntegrative;
 import firok.spring.jfb.service_impl.ContextKeys;
+import firok.spring.jfb.util.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -80,6 +78,11 @@ public class RecordIntegrative implements IRecordIntegrative, IWorkflowService
 				target = String.valueOf(context.get(ContextKeys.KEY_TARGET));
 				files = context.get(ContextKeys.KEY_FILES) instanceof File[] fs ? fs : new File[0];
 			}
+			Assertions.assertStrLenRange(fileName, 1, 255, "文件名长度不符合要求");
+			Assertions.assertStrLenRange(bucketName, 1, 64, "桶名长度不符合要求");
+			Assertions.assertStrLenRange(target, 1, 64, "持久化存储类型名长度不符合要求");
+			Assertions.assertNumberRange(fileSize, 1, null, "原始文件大小不符合要求");
+
 			var now = new Date();
 			var record = new UploadRecordBean();
 			record.setFileName(fileName);
@@ -101,7 +104,7 @@ public class RecordIntegrative implements IRecordIntegrative, IWorkflowService
 		catch (Throwable e)
 		{
 			trans.rollbackToSavepoint(sp);
-			throw new ExceptionIntegrative("创建记录时发生错误", e);
+			throw new ExceptionIntegrative("创建上传记录时发生错误: "+e.getMessage(), e);
 		}
 	}
 }

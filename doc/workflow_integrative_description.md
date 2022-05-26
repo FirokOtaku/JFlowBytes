@@ -104,10 +104,10 @@
 * `files`: java.io.File[]:
   相关文件列表.
 * `file_name`: String
-  原始文件名.
+  原始文件名. 长度 1~255
 * `file_size`: int
-  原始文件大小.
+  原始文件大小. 正整数
 * `name_bucket`: String
-  存入的桶名称.
+  存入的桶名称. 长度 1~64
 * `name_target`: String
-  持久化存储的类型名称. (`minio`, `qiniu`, `filesystem`)
+  持久化存储的类型名称. 长度 1~64 (目前可能的值为 `minio`, `qiniu`, `filesystem`)

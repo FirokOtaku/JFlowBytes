@@ -6,6 +6,7 @@ import firok.spring.jfb.flow.WorkflowThread;
 import firok.spring.jfb.service.ExceptionIntegrative;
 import firok.spring.jfb.service.IWorkflowService;
 import firok.spring.jfb.service.upload.IUploadIntegrative;
+import io.swagger.annotations.*;
 import lombok.Data;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.beans.BeansException;
@@ -20,6 +21,7 @@ import javax.annotation.PreDestroy;
 import java.io.File;
 import java.util.*;
 
+@Api(description = "工作流相关接口")
 @RestController
 @RequestMapping("/api/workflow")
 public class FlowController implements ApplicationContextAware
@@ -95,10 +97,8 @@ public class FlowController implements ApplicationContextAware
 	@Value("${app.flow.folder-flow}")
 	File folderWorkflow;
 
-	/**
-	 * 创建一个工作流
-	 */
 	@PostMapping("/create_workflow")
+	@ApiOperation("创建一个工作流")
 	public Ret<?> createWorkflow(
 			@RequestBody CreateWorkflowParam param
 	)
@@ -127,6 +127,8 @@ public class FlowController implements ApplicationContextAware
 		thread.start();
 		return Ret.success(id);
 	}
+
+	@ApiOperation("获取当前工作流列表")
 	@GetMapping("/list_current_workflow")
 	public Ret<?> listCurrentWorkflows()
 	{
@@ -148,6 +150,7 @@ public class FlowController implements ApplicationContextAware
 		return Ret.success(ret);
 	}
 
+	@ApiOperation("根据工作流id停止并删除指定工作流")
 	@DeleteMapping("/delete_workflow")
 	public Ret<?> deleteWorkflow(
 			@RequestParam("idWorkflow") String idWorkflow
@@ -221,16 +224,13 @@ public class FlowController implements ApplicationContextAware
 	}
 
 	@Data
+	@ApiModel("创建工作流参数")
 	public static class CreateWorkflowParam
 	{
-		/**
-		 * 需要进行的操作
-		 */
+		@ApiModelProperty("工作流处理器列表")
 		String[] listOperation;
 
-		/**
-		 * 上下文初始参数
-		 */
+		@ApiModelProperty("工作流上下文初始参数")
 		Map<String, ?> mapContextInitParam;
 	}
 
@@ -244,6 +244,7 @@ public class FlowController implements ApplicationContextAware
 		this.context = context;
 	}
 
+	@ApiOperation("获取可用的工作流处理器列表")
 	@GetMapping("/list_workflow_service")
 	public Ret<Collection<String>> listWorkflowService()
 	{
