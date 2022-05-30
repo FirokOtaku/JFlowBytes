@@ -5,7 +5,7 @@ import firok.spring.jfb.flow.WorkflowContext;
 import firok.spring.jfb.service.ExceptionIntegrative;
 import firok.spring.jfb.service.IWorkflowService;
 import firok.spring.jfb.service.upload.IUploadIntegrative;
-import firok.spring.jfb.service_impl.ContextKeys;
+import firok.spring.jfb.constant.ContextKeys;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
 
-import static firok.spring.jfb.service_impl.ContextKeys.*;
+import static firok.spring.jfb.constant.ContextKeys.*;
 
 /**
  * 工作流处理器 - 文件上传阶段 <br>

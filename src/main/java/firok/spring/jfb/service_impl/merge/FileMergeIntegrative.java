@@ -4,7 +4,7 @@ import firok.spring.jfb.flow.WorkflowContext;
 import firok.spring.jfb.service.ExceptionIntegrative;
 import firok.spring.jfb.service.IWorkflowService;
 import firok.spring.jfb.service.merge.IFileMergeIntegrative;
-import firok.spring.jfb.service_impl.ContextKeys;
+import firok.spring.jfb.constant.ContextKeys;
 import firok.spring.jfb.util.EnumerationMultiFileInputStream;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -15,7 +15,7 @@ import java.io.FileOutputStream;
 import java.io.SequenceInputStream;
 import java.util.Map;
 
-import static firok.spring.jfb.service_impl.ContextKeys.KEY_FILES;
+import static firok.spring.jfb.constant.ContextKeys.KEY_FILES;
 
 @ConditionalOnExpression("${app.service-merge.enable:false}")
 @Service

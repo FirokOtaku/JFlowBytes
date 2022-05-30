@@ -10,7 +10,7 @@
     </parent>
     <groupId>firok.spring</groupId>
     <artifactId>jfb</artifactId>
-    <version>0.1.15</version>
+    <version>0.1.16</version>
     <name>JFlowBytes</name>
     <url>https://github.com/351768593/JFlowBytes</url>
     <description>A simple file processing system.</description>
@@ -89,7 +89,7 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.28</version>
+            <version>8.0.21</version>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>

@@ -1,4 +1,4 @@
-package firok.spring.jfb.service_impl;
+package firok.spring.jfb.constant;
 
 /**
  * 工作流上下文用到的一些键

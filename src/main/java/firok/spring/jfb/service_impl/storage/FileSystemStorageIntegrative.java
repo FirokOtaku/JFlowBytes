@@ -5,7 +5,7 @@ import firok.spring.jfb.flow.WorkflowContext;
 import firok.spring.jfb.service.ExceptionIntegrative;
 import firok.spring.jfb.service.IWorkflowService;
 import firok.spring.jfb.service.storage.IStorageIntegrative;
-import firok.spring.jfb.service_impl.ContextKeys;
+import firok.spring.jfb.constant.ContextKeys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +13,7 @@ import javax.annotation.concurrent.ThreadSafe;
 import java.io.*;
 import java.util.Map;
 
-import static firok.spring.jfb.service_impl.ContextKeys.KEY_FILES;
+import static firok.spring.jfb.constant.ContextKeys.KEY_FILES;
 
 //@ConditionalOnExpression("${app.service-storage.file-system.enable}")
 @Service

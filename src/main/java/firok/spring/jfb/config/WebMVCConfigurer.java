@@ -1,36 +1,23 @@
 package firok.spring.jfb.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.service.Contact;
-import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.DocumentationCache;
 import springfox.documentation.spring.web.SpringfoxWebConfiguration;
 import springfox.documentation.spring.web.SpringfoxWebMvcConfiguration;
 import springfox.documentation.spring.web.WebMvcPropertySourcedRequestMappingHandlerMapping;
 import springfox.documentation.spring.web.json.JacksonModuleRegistrar;
 import springfox.documentation.spring.web.json.JsonSerializer;
-import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger.configuration.SwaggerCommonConfiguration;
 import springfox.documentation.swagger2.configuration.Swagger2JacksonModule;
 import springfox.documentation.swagger2.mappers.ServiceModelToSwagger2Mapper;
 import springfox.documentation.swagger2.web.Swagger2ControllerWebMvc;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @Configuration

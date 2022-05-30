@@ -7,7 +7,7 @@ import firok.spring.jfb.flow.WorkflowContext;
 import firok.spring.jfb.service.ExceptionIntegrative;
 import firok.spring.jfb.service.IWorkflowService;
 import firok.spring.jfb.service.record.IRecordIntegrative;
-import firok.spring.jfb.service_impl.ContextKeys;
+import firok.spring.jfb.constant.ContextKeys;
 import firok.spring.jfb.util.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -61,8 +61,8 @@ public class RecordIntegrative implements IRecordIntegrative, IWorkflowService
 	@Transactional(rollbackFor = ExceptionIntegrative.class)
 	public void operateWorkflow(WorkflowContext context) throws ExceptionIntegrative
 	{
-		var trans = TransactionAspectSupport.currentTransactionStatus();
-		var sp = trans.createSavepoint();
+//		var trans = TransactionAspectSupport.currentTransactionStatus();
+//		var sp = trans.createSavepoint();
 		try
 		{
 			String fileName;
@@ -100,10 +100,11 @@ public class RecordIntegrative implements IRecordIntegrative, IWorkflowService
 				slice.setIdUploadRecord(idRecord);
 				serviceSlice.save(slice);
 			}
+//			trans.flush();
 		}
 		catch (Throwable e)
 		{
-			trans.rollbackToSavepoint(sp);
+//			trans.rollbackToSavepoint(sp);
 			throw new ExceptionIntegrative("创建上传记录时发生错误: "+e.getMessage(), e);
 		}
 	}

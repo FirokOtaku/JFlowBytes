@@ -4,7 +4,7 @@ import firok.spring.jfb.flow.WorkflowContext;
 import firok.spring.jfb.service.ExceptionIntegrative;
 import firok.spring.jfb.service.IWorkflowService;
 import firok.spring.jfb.service.transcode.ITranscodeM3U8Integrative;
-import firok.spring.jfb.service_impl.ContextKeys;
+import firok.spring.jfb.constant.ContextKeys;
 import firok.spring.jfb.util.NativeProcess;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -14,7 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
-import static firok.spring.jfb.service_impl.ContextKeys.KEY_FILES;
+import static firok.spring.jfb.constant.ContextKeys.KEY_FILES;
 
 /**
  * 调用 FFmpeg 把单视频文件转码成 M3U8 视频文件列表
