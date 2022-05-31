@@ -26,6 +26,9 @@ public class FFmpegTranscodeM3U8Integrative extends FFmpegTranscodeIntegrative i
 {
 	public static final String SERVICE_NAME = ContextKeys.PREFIX + "ffmpeg-transcode-m3u8";
 
+	public static final String KEY_THUMBNAIL_WIDTH = "thumbnail-width";
+	public static final String KEY_THUMBNAIL_HEIGHT = "thumbnail-height";
+
 	@Value("${app.service-transcode.ffmpeg-m3u8.folder-transcode-m3u8}")
 	protected String folderM3U8;
 
@@ -43,6 +46,14 @@ public class FFmpegTranscodeM3U8Integrative extends FFmpegTranscodeIntegrative i
 	protected File fileM3U8of(File folderM3U8, String name)
 	{
 		return new File(folderM3U8, name + ".m3u8");
+	}
+
+	/**
+	 * 获取一个视频缩略图文件
+	 */
+	protected File fileThumbnailOf(WorkflowContext context)
+	{
+		return new File(context.folderWorkflowRoot, context.id + ".jpg");
 	}
 
 	@Override
@@ -98,6 +109,7 @@ public class FFmpegTranscodeM3U8Integrative extends FFmpegTranscodeIntegrative i
 		}
 	}
 
+	@SuppressWarnings("ResultOfMethodCallIgnored")
 	@Override
 	public void operateWorkflow(WorkflowContext context) throws ExceptionIntegrative
 	{
@@ -106,12 +118,44 @@ public class FFmpegTranscodeM3U8Integrative extends FFmpegTranscodeIntegrative i
 			throw new ExceptionIntegrative("没有找到合并后的视频文件");
 		var folderM3U8 = folderM3U8of(context);
 		var fileM3U8 = fileM3U8of(folderM3U8, context.id);
+		var fileThumbnail = fileThumbnailOf(context);
+
+		String pathFileMerge, pathFileM3U8, pathFileThumbnail;
+		try // 合理化路径
+		{
+			pathFileMerge = fileMerge.getCanonicalPath();
+			pathFileM3U8 = fileM3U8.getCanonicalPath();
+			pathFileThumbnail = fileThumbnail.getCanonicalPath();
+		}
+		catch (Exception e)
+		{
+			throw new ExceptionIntegrative("无法合理化路径", e);
+		}
+
+		try // 生成缩略图
+		{
+			var command = """
+					%s -y -i "%s" -r 1 -frames:v 1 -f image2 "%s"
+					""".formatted(super.pathFFmpeg, pathFileMerge, pathFileThumbnail);
+			try(var process = new NativeProcess(command))
+			{
+				int ret = process.waitFor();
+				if(ret != 0)
+				{
+					var contentErr = process.contentErr();
+					throw new RuntimeException(contentErr);
+				}
+			}
+
+			// todo 压缩缩略图大小
+		}
+		catch (Exception e)
+		{
+			throw new ExceptionIntegrative("生成缩略图发生错误:\n" + e.getMessage());
+		}
 
 		try
 		{
-			// 合理化路径
-			var pathFileMerge = fileMerge.getCanonicalPath();
-			var pathFileM3U8 = fileM3U8.getCanonicalPath();
 
 			// 创建目录 准备开始转码
 			folderM3U8.mkdirs();
@@ -126,18 +170,9 @@ public class FFmpegTranscodeM3U8Integrative extends FFmpegTranscodeIntegrative i
 				if(ret != 0)
 				{
 					var contentErr = process.contentErr();
-					throw new RuntimeException("转码发生错误: \n"+contentErr);
+					throw new RuntimeException(contentErr);
 				}
 			}
-			// 如果成功转码 删掉转码前的文件
-			IWorkflowService.super.addFileToCleanList(context, fileMerge);
-
-			// 更新上下文
-			var files = fileM3U8.getParentFile().listFiles();
-			if(files == null) files = new File[0];
-			context.put(KEY_FILES, files);
-			context.put(KEY_FOLDER_M3U8, folderM3U8);
-			context.put(KEY_FILE_M3U8, fileM3U8);
 		}
 		catch (InterruptedException e)
 		{
@@ -149,7 +184,27 @@ public class FFmpegTranscodeM3U8Integrative extends FFmpegTranscodeIntegrative i
 		{
 			// 如果转码失败 删掉转码后目录所有内容
 			IWorkflowService.super.addFileToCleanList(context, folderM3U8);
-			throw new ExceptionIntegrative(e);
+			throw new ExceptionIntegrative("转码发生错误:\n" + e.getMessage(), e);
+		}
+
+		synchronized (context.LOCK)
+		{
+			// 如果成功转码 删掉转码前的文件
+			IWorkflowService.super.addFileToCleanList(context, fileMerge);
+
+			// 转码后的文件列表
+			var files = fileM3U8.getParentFile().listFiles();
+			if(files == null) files = new File[0];
+
+			// 把缩略图文件追加到列表里
+			var filesNew = new File[files.length + 1];
+			System.arraycopy(files, 0, filesNew, 0, files.length);
+			filesNew[files.length] = fileThumbnail;
+
+			// 更新上下文
+			context.put(KEY_FILES, filesNew);
+			context.put(KEY_FOLDER_M3U8, folderM3U8);
+			context.put(KEY_FILE_M3U8, fileM3U8);
 		}
 	}
 }

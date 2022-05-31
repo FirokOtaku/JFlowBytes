@@ -85,8 +85,7 @@
                     <div class="c-gray">
                         上传到 <b>MinIO</b> 和 <b>文件储存</b> 时需要指定上传的桶名称. <br>
                         <b>桶</b> 概念类似文件夹. <br>
-                        七牛云的桶空间暂时不能通过后台配置, 需要在网页端控制台手动配置. <br>
-                        目前上传至七牛云时固定使用 'firok-demo' 桶名称. <br>
+                        七牛云的桶空间暂时不能通过后台配置或自动创建, 需要在网页端控制台手动配置. <br>
                     </div>
                 </td>
             </tr>
@@ -118,13 +117,8 @@
                 </td>
                 <td>
                     <button @click="changePreview('minio')">🧿 加载自 MinIO</button> <br>
-                    <button @click="changePreview('qiniu')">🌤 加载自七牛云</button> <br>
+                    <button @click="changePreview('qiniu')">🌤 加载自七牛云公共空间</button> <br>
                     <button @click="changePreview('filesystem')">📦 加载自文件储存</button>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="3" class="c-gray">
-                    只能加载七牛云的公共空间文件.
                 </td>
             </tr>
             <tr>

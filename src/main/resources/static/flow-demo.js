@@ -62,7 +62,7 @@ const app = new Vue({
             switch(target)
             {
                 case 'minio': case 'filesystem':
-                    url = `http://localhost:29011/api/storage/${target}/read/${nameBucket}/${nameFile}`;
+                    url = `/api/storage/${target}/read/${nameBucket}/${nameFile}`;
                     break;
                 case 'qiniu':
                     let res = await axios({
