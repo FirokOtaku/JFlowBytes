@@ -1,5 +1,6 @@
 package firok.spring.jfb.service;
 
+import firok.spring.jfb.constant.ContextKeys;
 import firok.spring.jfb.flow.WorkflowContext;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 
@@ -9,8 +10,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
 
-import static firok.spring.jfb.constant.ContextKeys.KEY_CLEAN_FILES;
-import static firok.spring.jfb.constant.ContextKeys.KEY_FILES;
+import static firok.spring.jfb.constant.ContextKeys.*;
 
 /**
  * 标明某个 service 支持工作流化调用

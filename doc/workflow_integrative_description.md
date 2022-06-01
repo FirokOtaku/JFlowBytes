@@ -9,6 +9,15 @@
 * 如果某个参数不在任何列表:
   此参数运行过程中 **不会受到任何影响**
 
+所有处理器默认使用如下临时变量:
+
+* `progress_total`: int
+  当前处理器总进度
+* `progress_now`: int
+  当前处理器当前进度
+* `clean_files`: java.io.File[]
+  当前处理器执行结束后需要清理的文件
+
 ## 分片上传 `jfb:upload`
 
 此处理器会持续等待,  
@@ -55,7 +64,7 @@
 出参:
 
 * `files`: java.io.File[]
-  以 m3u8 格式切片转码之后的文件列表.
+  以 m3u8 格式切片转码之后的文件列表. 包含 m3u8 索引文件, 若干 m3u8 视频切片文件, 视频缩略图.
 * `folder_m3u8`: java.io.File
   储存转码后所有文件的目录.
 * `file_m3u8`: java.io.File

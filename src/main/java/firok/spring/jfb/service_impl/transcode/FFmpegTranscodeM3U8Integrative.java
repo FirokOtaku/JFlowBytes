@@ -5,7 +5,7 @@ import firok.spring.jfb.service.ExceptionIntegrative;
 import firok.spring.jfb.service.IWorkflowService;
 import firok.spring.jfb.service.transcode.ITranscodeM3U8Integrative;
 import firok.spring.jfb.constant.ContextKeys;
-import firok.spring.jfb.util.NativeProcess;
+import firok.topaz.NativeProcess;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Service;

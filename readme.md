@@ -28,4 +28,4 @@
 ## 依赖
 
 除了标准 SpringBoot 依赖,  
-项目还依赖 [MVCI](https://github.com/351768593/MVCIntrospector) 工具.
+项目还依赖 [MVCI](https://github.com/351768593/MVCIntrospector) 工具和 [Topaz](https://github.com/351768593/Topaz) 库.

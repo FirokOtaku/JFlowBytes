@@ -1,0 +1,70 @@
+package firok.spring.jfb.flow;
+
+import firok.spring.jfb.service.ExceptionIntegrative;
+import firok.spring.jfb.service.IWorkflowService;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import java.util.*;
+
+@Component
+public class WorkflowServices implements ApplicationContextAware
+{
+	private boolean hasFlowContextInit = false;
+	private final Map<String, IWorkflowService> mapService = new HashMap<>();
+	private final Set<String> setServiceName = new HashSet<>();
+	/**
+	 * spring 上下文, 用于寻找可用的 flow 服务实例
+	 */
+	ApplicationContext context;
+	@Override
+	public void setApplicationContext(ApplicationContext context) throws BeansException
+	{
+		this.context = context;
+	}
+
+	/**
+	 * 扫描 Spring 上下文, 获取所有工作流处理器
+	 */
+	@PostConstruct
+	public void scanWorkflowServices() throws ExceptionIntegrative
+	{
+		synchronized (this)
+		{
+			if(hasFlowContextInit) return;
+
+			var mapServiceContext = context.getBeansOfType(IWorkflowService.class, true, true);
+
+			// 注册所有上下文提供的工作流处理器
+			for(var entryServiceContext : mapServiceContext.entrySet())
+			{
+				IWorkflowService serviceContext = entryServiceContext.getValue();
+				String nameServiceContext = serviceContext.getWorkflowServiceOperation();
+
+				if(setServiceName.contains(nameServiceContext))
+					throw new ExceptionIntegrative("无法注册重复的工作流处理器: "+nameServiceContext);
+
+				setServiceName.add(nameServiceContext);
+				mapService.put(nameServiceContext, serviceContext);
+			}
+
+			hasFlowContextInit = true;
+		}
+	}
+
+	public IWorkflowService getService(String nameService)
+	{
+		synchronized (this)
+		{
+			return mapService.get(nameService);
+		}
+	}
+
+	public List<String> getServiceNames()
+	{
+		return new ArrayList<>(setServiceName);
+	}
+}

@@ -1,17 +1,20 @@
 package firok.spring.jfb;
 
+import firok.topaz.Topaz;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import springfox.documentation.swagger2.annotations.EnableSwagger2WebMvc;
 
 import javax.annotation.PostConstruct;
-import java.util.Properties;
+import java.util.*;
 
 @SpringBootApplication
 @MapperScan("firok.spring.jfb.mapper")
 public class JFlowBytesApplication
 {
+	public static JFlowBytesApplication instance;
+	public JFlowBytesApplication() { instance = this; }
+
 	public static String name;
 	public static String version;
 	public static String description;
@@ -42,11 +45,11 @@ public class JFlowBytesApplication
 	@PostConstruct
 	public void postConstruct()
 	{
-		System.out.printf("%s v%s by %s\n", name, version, author);
+//		System.out.printf("%s v%s by %s\n", name, version, author);
+		System.out.println("Hi there, Topaz " + Topaz.VERSION);
 	}
 
 	static org.springframework.context.ConfigurableApplicationContext contextSpringBoot;
-
 	public static void stop()
 	{
 		contextSpringBoot.close();

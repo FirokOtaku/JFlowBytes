@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.18
+
+* 增加 MyBatis Plus 分页支持
+* 移除 swagger 相关代码
+* 新增 [Topaz](https://github.com/351768593/Topaz) 库依赖
+* 转移 Spring 上下文实体探测代码
+
 ## 0.1.17
 
 * 代码优化和错误改进

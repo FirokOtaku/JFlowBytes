@@ -5,7 +5,7 @@ import firok.spring.jfb.service.ExceptionIntegrative;
 import firok.spring.jfb.service.IWorkflowService;
 import firok.spring.jfb.service.merge.IFileMergeIntegrative;
 import firok.spring.jfb.constant.ContextKeys;
-import firok.spring.jfb.util.EnumerationMultiFileInputStream;
+import firok.topaz.EnumerationMultiFileInputStream;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Service;
@@ -67,27 +67,7 @@ public class FileMergeIntegrative implements IFileMergeIntegrative, IWorkflowSer
 			// 通知上级
 			throw new ExceptionIntegrative(e);
 		}
-
 	}
-
-//	@Override
-//	public void cleanWorkflow(WorkflowContext context, boolean isSuccess) throws ExceptionIntegrative
-//	{
-//		if(isSuccess) // 合并成功 删除分片文件
-//		{
-//			var files = (File[]) context.get(KEY_FILES);
-//			for(var file : files)
-//			{
-//				// todo 这里也许可以开放一个配置项出来 允许退出时删除
-//				file.delete();
-//			}
-//		}
-//		else // 合并失败 删除合并后文件
-//		{
-//			var fileMerge = mergeFileOf(context);
-//			fileMerge.delete();
-//		}
-//	}
 
 	@Override
 	public void mergeAll(File[] files, File fileMerge) throws ExceptionIntegrative

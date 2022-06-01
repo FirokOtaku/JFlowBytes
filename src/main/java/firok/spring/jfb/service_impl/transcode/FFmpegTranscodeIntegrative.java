@@ -1,7 +1,7 @@
 package firok.spring.jfb.service_impl.transcode;
 
 import firok.spring.jfb.constant.PlatformType;
-import firok.spring.jfb.util.NativeProcess;
+import firok.topaz.NativeProcess;
 import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.PostConstruct;
