@@ -44,4 +44,13 @@ public interface ContextKeys
 	 * 要上传到什么持久化储存: String
 	 * */
 	String KEY_TARGET = "name_target";
+
+	/**
+	 * 工作流某处理器执行总进度: int
+	 */
+	String KEY_PROGRESS_TOTAL = "progress_total";
+	/**
+	 * 工作流某处理器执行当前进度: int
+	 */
+	String KEY_PROGRESS_NOW = "progress_now";
 }

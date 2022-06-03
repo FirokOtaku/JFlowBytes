@@ -92,23 +92,39 @@ public class FlowController
 		return Ret.success(id);
 	}
 
+	public record ListCurrentWorkflowParam(
+			Set<String> listWorkflowId,
+			Integer lenLog
+	) { }
+
 	/**
 	 * 获取当前工作流列表
 	 */
-	@GetMapping("/list_current_workflow")
-	public Ret<?> listCurrentWorkflows()
+	@PostMapping("/list_current_workflow")
+	public Ret<?> listCurrentWorkflows(
+			@RequestBody(required = false) ListCurrentWorkflowParam params
+	)
 	{
 		var ret = new HashMap<String, WorkflowStatus>();
+		// 整理前台传参
+		var listId = params != null && params.listWorkflowId() != null ? params.listWorkflowId() : null;
+		var lenLog = params != null && params.lenLog() != null ? params.lenLog() : 3;
+		if(lenLog < 0) lenLog = 0;
+		if(lenLog > 999) lenLog = 999;
+		// 开始查询
 		synchronized (LOCK_WORKFLOW)
 		{
 			for(var entryWorkflow : mapWorkflow.entrySet())
 			{
 				var idWorkflow = entryWorkflow.getKey();
+				if(listId != null && !listId.contains(idWorkflow)) // 不包含此工作流
+					continue;
+
 				var workflow = entryWorkflow.getValue();
 				WorkflowStatus status;
 				synchronized (workflow.LOCK)
 				{
-					status = workflow.getCurrentStatus(3);
+					status = workflow.getCurrentStatus(lenLog);
 				}
 				ret.put(idWorkflow, status);
 			}
@@ -134,19 +150,13 @@ public class FlowController
 
 		try // 清理工作流目录
 		{
-			stopWorkflow(workflow);
+			WorkflowServices.cleanWorkflow(workflow, true, true);
 			return Ret.success();
 		}
 		catch (Exception e)
 		{
 			return Ret.fail("工作流已移除自队列, 但清理时工作目录时发生错误. 这通常不影响系统运行, 但可能需要手动清理: " + workflow.id);
 		}
-	}
-
-	private void stopWorkflow(WorkflowContext context) throws Exception
-	{
-		context.thread.interrupt();
-		FileUtils.forceDelete(context.folderWorkflowRoot);
 	}
 
 	/**

@@ -6,6 +6,14 @@ import firok.spring.jfb.service.storage.IStorageIntegrative;
 import firok.spring.jfb.constant.ContextKeys;
 
 import java.io.File;
+import java.util.Objects;
+
+import static firok.spring.jfb.constant.ContextKeys.KEY_PROGRESS_NOW;
+import static firok.spring.jfb.constant.ContextKeys.KEY_PROGRESS_TOTAL;
+import static firok.topaz.Capacities.mb;
+import static firok.topaz.Collections.mappingKeyValue;
+import static firok.topaz.Collections.sumLong;
+import static java.util.Arrays.asList;
 
 class StorageTransferUtil
 {
@@ -20,10 +28,26 @@ class StorageTransferUtil
 			nameBucket = String.valueOf(context.get(ContextKeys.KEY_NAME_BUCKET));
 		}
 		if(files == null) throw new ExceptionIntegrative("找不到上传列表");
+		// 获取文件大小
+		var mapFileSize = mappingKeyValue(asList(files), Objects::requireNonNull, File::length);
+		long totalSize = sumLong(mapFileSize.values()); // 总大小
 
+		synchronized (context.LOCK)
+		{
+			context.put(KEY_PROGRESS_NOW, 0);
+			context.put(KEY_PROGRESS_TOTAL, (int) mb(totalSize));
+		}
+
+		long finishSize = 0;
 		for (File file : files)
 		{
+			var size = mapFileSize.get(file);
 			service.storeByFile(nameBucket, file);
+			finishSize += size;
+			synchronized (context.LOCK)
+			{
+				context.put(KEY_PROGRESS_NOW, (int) mb(finishSize));
+			}
 		}
 	}
 }

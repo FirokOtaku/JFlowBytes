@@ -73,7 +73,7 @@ const API = {
     {
         return _axiosRequest({
             url: '/api/workflow/list_current_workflow',
-            method: 'get',
+            method: 'post',
         });
     },
 

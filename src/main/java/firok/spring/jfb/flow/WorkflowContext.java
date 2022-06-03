@@ -6,6 +6,7 @@ import firok.spring.jfb.constant.ContextKeys;
 import java.io.File;
 import java.util.*;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 public class WorkflowContext extends HashMap<String, Object>
 {
@@ -119,7 +120,46 @@ public class WorkflowContext extends HashMap<String, Object>
 
 	// todo 日志功能以后再做 现在没时间做日志
 	private final List<LogNode> listLog = new ArrayList<>(20);
-	private static class LogNode { Level level; String message; long time; public String toString() { return time + "|" + level + ": " + message; } }
+
+	/**
+	 * 获取工作流当前状态
+	 * @param lenLog 包含最近几条日志
+	 */
+	public WorkflowStatus getCurrentStatus(int lenLog)
+	{
+		var ret = new WorkflowStatus();
+		ret.id = this.id;
+
+		// 日志信息列表
+		var lenLogNow = listLog.size();
+		if(lenLog > 0 && lenLogNow > 0)
+		{
+			if(lenLog >= lenLogNow)
+			{
+				ret.listLog = new ArrayList<>(listLog);
+			}
+			else
+			{
+				var start = Math.max(0, lenLogNow - lenLog);
+				ret.listLog = listLog.subList(start, start + lenLog);
+			}
+		}
+
+		// 处理器列表
+		ret.listOperationName = listOperation.stream()
+				.map(IWorkflowService::getWorkflowServiceOperation)
+				.collect(Collectors.toList());
+
+		var service = getCurrentOperation();
+		// 当前处理器名称
+		ret.currentOperationName = service == null ? null : service.getWorkflowServiceOperation();
+		// 当前处理器进度
+		ret.currentOperationProgressTotal = service == null ? 1 : service.getMaxProgress(this);
+		ret.currentOperationProgressNow = service == null ? 0 : service.getNowProgress(this);
+
+		return ret;
+	}
+
 	public void log(Level level, Object obj)
 	{
 		if(obj == null) return;
@@ -135,7 +175,8 @@ public class WorkflowContext extends HashMap<String, Object>
 			listLog.add(node);
 		}
 
-		System.out.printf("[WF|%d|%s|%s]\n", now, this.id, msg);
+		if(WorkflowServices.instance.isLogConsole)
+			System.out.printf("[WF|%d|%s|%s]\n", now, this.id, msg);
 	}
 	public String contentLog()
 	{

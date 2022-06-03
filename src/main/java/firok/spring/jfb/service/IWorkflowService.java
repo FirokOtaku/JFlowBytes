@@ -104,6 +104,44 @@ public interface IWorkflowService
 	}
 
 	/**
+	 * 轻度任务单位
+	 */
+	int PROGRESS_UNIT_LIGHT = 1;
+
+	/**
+	 * 重度任务单位
+	 */
+	int PROGRESS_UNIT_HEAVY = 10;
+
+	/**
+	 * 获取此工作流在执行此处理器时的最大进度, 需要返回正整数.
+	 * 处理器执行方法只需要向上下文写入此变量即可.
+	 * @see #operateWorkflow(WorkflowContext)
+	 * @implNote 这个接口只是获取给前台展示的信息用的, 不对工作流执行造成影响. 在工作流不处于当前处理器时, 调用此方法没有意义.
+	 */
+	default int getMaxProgress(WorkflowContext context)
+	{
+		synchronized (context.LOCK)
+		{
+			return context.get(ContextKeys.KEY_PROGRESS_TOTAL) instanceof Integer num ? num : 1;
+		}
+	}
+
+	/**
+	 * 获取此工作流在执行此处理器时的进度, 返回整数.
+	 * 处理器执行方法只需要向上下文写入此变量即可.
+	 * @see #operateWorkflow(WorkflowContext)
+	 * @implNote 这个接口只是获取给前台展示的信息用的, 不对工作流执行造成影响. 在工作流不处于当前处理器时, 调用此方法没有意义.
+	 */
+	default int getNowProgress(WorkflowContext context)
+	{
+		synchronized (context.LOCK)
+		{
+			return context.get(ContextKeys.KEY_PROGRESS_NOW) instanceof Integer num ? num : 0;
+		}
+	}
+
+	/**
 	 * 把指定文件置入工作流上下文
 	 * @param context 工作流上下文
 	 * @param files 文件列表. 为null则清空变量

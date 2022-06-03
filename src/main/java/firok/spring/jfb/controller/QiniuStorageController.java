@@ -5,10 +5,7 @@ import firok.spring.jfb.bean.Ret;
 import firok.spring.jfb.service_impl.storage.QiniuStorageIntegrative;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 七牛云持久化储存相关接口
@@ -27,6 +24,7 @@ public class QiniuStorageController
 	 */
 	@Deprecated
 	@GetMapping("/space_private/{nameBucket}/{nameFile}")
+	@CrossOrigin(origins = "*")
 	public Ret<String> spacePrivate(
 			@PathVariable("nameBucket") String nameBucket,
 			@PathVariable("nameFile") String nameFile
@@ -49,6 +47,7 @@ public class QiniuStorageController
 	 * */
 	@SuppressWarnings("HttpUrlsUsage")
 	@GetMapping("/space_public/{nameBucket}/{nameFile}")
+	@CrossOrigin(origins = "*")
 	public Ret<String> spacePublic(
 			@PathVariable("nameBucket") String nameBucket,
 			@PathVariable("nameFile") String nameFile

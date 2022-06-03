@@ -15,9 +15,15 @@ import java.util.Date;
 public class UploadRecordBean extends BaseBean
 {
 	/**
+	 * 任务id 长度36 存uuid用
+	 */
+	String idTask;
+
+	/**
 	 * 文件原始名称
 	 */
 	String fileName;
+
 	/**
 	 * 文件原始大小
 	 */

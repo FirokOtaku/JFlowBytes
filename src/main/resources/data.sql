@@ -2,6 +2,7 @@
 create table if not exists d_upload_record
 (
     id bigint not null,
+    id_task varchar(36) not null,
     file_name varchar(255) not null,
     file_size bigint not null,
     upload_time timestamp not null,

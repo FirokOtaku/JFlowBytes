@@ -35,6 +35,7 @@ public class WorkflowThread extends Thread
 				break TICK_LOOP;
 			}
 
+			// fixme low 这个地方其实有问题
 			service = context.getCurrentOperation();
 			if(service == null)
 			{
@@ -89,6 +90,11 @@ public class WorkflowThread extends Thread
 					break TICK_LOOP;
 			}
 		}
+		try
+		{
+			WorkflowServices.cleanWorkflow(context, false, true);
+		}
+		catch (Exception ignored) { }
 		context.currentOperationIndex = Integer.MAX_VALUE;
 		context.log(Level.INFO, "工作流结束");
 	}

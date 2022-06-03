@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.io.File;
 import java.util.Date;
@@ -85,6 +84,7 @@ public class RecordIntegrative implements IRecordIntegrative, IWorkflowService
 
 			var now = new Date();
 			var record = new UploadRecordBean();
+			record.setIdTask(context.id);
 			record.setFileName(fileName);
 			record.setFileSize(fileSize);
 			record.setUploadTime(now);

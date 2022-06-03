@@ -2,7 +2,9 @@ package firok.spring.jfb.flow;
 
 import firok.spring.jfb.service.ExceptionIntegrative;
 import firok.spring.jfb.service.IWorkflowService;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
@@ -66,5 +68,29 @@ public class WorkflowServices implements ApplicationContextAware
 	public List<String> getServiceNames()
 	{
 		return new ArrayList<>(setServiceName);
+	}
+
+	@Value("${app.flow.log-console}")
+	public boolean isLogConsole;
+
+	public static WorkflowServices instance;
+	public WorkflowServices()
+	{
+		WorkflowServices.instance = this;
+	}
+
+	/**
+	 * 停止并清理工作流
+	 * @param context 工作流上下文
+	 * @param interrupt 是否打断线程
+	 * @param cleanCache 是否清理缓存
+	 * @throws Exception 发生任何异常
+	 */
+	public static void cleanWorkflow(WorkflowContext context, boolean interrupt, boolean cleanCache) throws Exception
+	{
+		if(interrupt)
+			context.thread.interrupt();
+		if(cleanCache)
+			FileUtils.forceDelete(context.folderWorkflowRoot);
 	}
 }

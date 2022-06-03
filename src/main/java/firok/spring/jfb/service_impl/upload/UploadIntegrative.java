@@ -165,4 +165,27 @@ public class UploadIntegrative implements IUploadIntegrative, IWorkflowService
 			throw new ExceptionIntegrative("用户取消上传或上传监控线程中断", exception);
 		}
 	}
+
+	@Override
+	public int getMaxProgress(WorkflowContext context)
+	{
+		synchronized (context.LOCK)
+		{
+			var status = context.get(KEY_STATUS_SLICE) instanceof boolean[] arr ? arr : new boolean[0];
+			return status.length * PROGRESS_UNIT_HEAVY;
+		}
+	}
+
+	@Override
+	public int getNowProgress(WorkflowContext context)
+	{
+		synchronized (context.LOCK)
+		{
+			var status = context.get(KEY_STATUS_SLICE) instanceof boolean[] arr ? arr : new boolean[0];
+			if(status.length == 0) return 0;
+			var finished = 0;
+			for(var statusSingle : status) finished += statusSingle ? 1 : 0;
+			return finished * PROGRESS_UNIT_HEAVY;
+		}
+	}
 }
