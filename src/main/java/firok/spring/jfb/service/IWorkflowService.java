@@ -79,6 +79,10 @@ public interface IWorkflowService
 			context.put(KEY_CLEAN_FILES, listFileClean);
 		}
 
+		// 清理掉进度状态, 不影响下一步执行
+		context.remove(KEY_PROGRESS_TOTAL);
+		context.remove(KEY_PROGRESS_NOW);
+
 		// 清空文件
 		Iterator<File> iterator = listFileClean.iterator();
 		while (iterator.hasNext())

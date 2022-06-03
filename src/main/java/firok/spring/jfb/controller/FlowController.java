@@ -40,7 +40,7 @@ public class FlowController
 			{
 				try
 				{
-					stopWorkflow(workflow);
+					WorkflowServices.cleanWorkflow(workflow, true, true);
 					countSuccess++;
 				}
 				// todo 有空再说吧
