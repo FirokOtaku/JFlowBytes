@@ -6,6 +6,7 @@ import firok.spring.jfb.service.ExceptionIntegrative;
 import firok.spring.jfb.service.IWorkflowService;
 import firok.spring.jfb.service.upload.IUploadIntegrative;
 import firok.spring.jfb.constant.ContextKeys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,6 +39,17 @@ public class UploadIntegrative implements IUploadIntegrative, IWorkflowService
 {
 	public static final String SERVICE_NAME = ContextKeys.PREFIX + "upload";
 
+	/**
+	 * 上次调用上传接口的时间: Long 用于记录上传是否超时
+	 */
+	public static final String KEY_TIME_LAST_UPLOAD = "time_last_upload";
+
+	/**
+	 * 上传超时时间
+	 */
+	@Value("${app.service-upload.timeout}")
+	long timeoutInterval;
+
 	@Override
 	public String getWorkflowServiceOperation()
 	{
@@ -55,8 +67,11 @@ public class UploadIntegrative implements IUploadIntegrative, IWorkflowService
 	@Override
 	public boolean[] uploadSlice(WorkflowContext context, int sliceIndex, MultipartFile fileSlice) throws ExceptionIntegrative
 	{
+		// 开始调用这个接口和这个接口执行完成的时候会分别触发一次对上传时间的刷新
 		synchronized (context.LOCK)
 		{
+			flushUploadTime(context);
+
 			// 检查指定分片是否上传完成
 			boolean[] statusSlice = context.get(KEY_STATUS_SLICE) instanceof boolean[] status ? status : null;
 			Integer countSlice = context.get(KEY_COUNT_SLICE) instanceof Integer count ? count : null;
@@ -88,7 +103,20 @@ public class UploadIntegrative implements IUploadIntegrative, IWorkflowService
 			{
 				throw new ExceptionIntegrative("上传分片时发生错误" + e.getMessage(), e);
 			}
+			finally
+			{
+				flushUploadTime(context);
+			}
 		}
+	}
+
+	/**
+	 * 更新上下文里的上传时间
+	 */
+	private void flushUploadTime(WorkflowContext context)
+	{
+		long now = System.currentTimeMillis();
+		context.put(KEY_TIME_LAST_UPLOAD, now);
 	}
 
 	@Override
@@ -167,6 +195,13 @@ public class UploadIntegrative implements IUploadIntegrative, IWorkflowService
 	}
 
 	@Override
+	public void cleanWorkflow(WorkflowContext context, boolean isSuccess) throws ExceptionIntegrative
+	{
+		IWorkflowService.super.cleanWorkflow(context, isSuccess);
+		context.remove(KEY_TIME_LAST_UPLOAD);
+	}
+
+	@Override
 	public int getMaxProgress(WorkflowContext context)
 	{
 		synchronized (context.LOCK)
@@ -187,5 +222,25 @@ public class UploadIntegrative implements IUploadIntegrative, IWorkflowService
 			for(var statusSingle : status) finished += statusSingle ? 1 : 0;
 			return finished * PROGRESS_UNIT_HEAVY;
 		}
+	}
+
+	@Override
+	public boolean shouldCheckTimeout(WorkflowContext context, long now)
+	{
+		return true;
+	}
+
+	@Override
+	public boolean isTimeout(WorkflowContext context, long now)
+	{
+		long timeLastUpload = context.get(KEY_TIME_LAST_UPLOAD) instanceof Long time ? time : 0;
+
+		if(timeLastUpload == 0)
+		{
+			context.put(KEY_TIME_LAST_UPLOAD, now);
+			return false;
+		}
+
+		return now - timeLastUpload >= timeoutInterval;
 	}
 }

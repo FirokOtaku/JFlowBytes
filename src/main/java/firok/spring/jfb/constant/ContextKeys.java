@@ -53,4 +53,9 @@ public interface ContextKeys
 	 * 工作流某处理器执行当前进度: int
 	 */
 	String KEY_PROGRESS_NOW = "progress_now";
+
+	/**
+	 * 工作流超时期限: Long
+	 */
+	String KEY_TIME_TIMEOUT_LIMIT = "time_timeout_limit";
 }

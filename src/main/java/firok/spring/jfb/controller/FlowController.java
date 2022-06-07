@@ -1,6 +1,7 @@
 package firok.spring.jfb.controller;
 
 import firok.spring.jfb.bean.Ret;
+import firok.spring.jfb.constant.ContextKeys;
 import firok.spring.jfb.flow.WorkflowContext;
 import firok.spring.jfb.flow.WorkflowServices;
 import firok.spring.jfb.flow.WorkflowStatus;
@@ -9,7 +10,6 @@ import firok.spring.jfb.service.ExceptionIntegrative;
 import firok.spring.jfb.service.IWorkflowService;
 import firok.spring.jfb.service.upload.IUploadIntegrative;
 import lombok.Data;
-import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +19,7 @@ import javax.annotation.PreDestroy;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 工作流相关接口
@@ -163,6 +164,78 @@ public class FlowController
 		{
 			return Ret.success("工作流已移除自队列, 但清理时工作目录时发生错误. 这通常不影响系统运行, 但可能需要手动清理: " + workflow.id);
 		}
+	}
+
+	/**
+	 * 由于超时原因清理工作流
+	 * @param idWorkflow 工作流id
+	 * @throws Exception 清理异常
+	 */
+	void deleteWorkflowByTimeout(String idWorkflow) throws Exception
+	{
+
+	}
+
+	/**
+	 * 检查并清理超时的工作流
+	 */
+	public void cleanTimeoutWorkflow()
+	{
+		var listWorkflow = new ArrayList<WorkflowContext>();
+		int countActive = 0;
+		synchronized (LOCK_WORKFLOW)
+		{
+			long now = System.currentTimeMillis();
+
+			var list = new ArrayList<String>();
+			for(var entry : mapWorkflow.entrySet())
+			{
+				var id = entry.getKey();
+				var context = entry.getValue();
+				var timeTimeoutLimit = context.get(ContextKeys.KEY_TIME_TIMEOUT_LIMIT) instanceof Long time ? time : 0;
+
+				boolean isTimeout;
+				if(timeTimeoutLimit > 0) // 存在超时期限 绕过处理器判断机制
+				{
+					isTimeout = now - timeTimeoutLimit > 0;
+				}
+				else // 没有设定超时期限 交付处理器判断
+				{
+					var service = context.getCurrentOperation();
+					isTimeout = (service == null) ||
+							(service.shouldCheckTimeout(context, now) && service.isTimeout(context, now));
+				}
+
+				if (isTimeout) list.add(id);
+				else countActive++;
+			}
+
+			for(var id : list)
+			{
+				var workflow = mapWorkflow.remove(id);
+				listWorkflow.add(workflow);
+			}
+		}
+
+		final AtomicInteger countSuccess = new AtomicInteger(0), countFail = new AtomicInteger(0);
+		listWorkflow.parallelStream().forEach(workflow ->
+		{
+			try
+			{
+				WorkflowServices.cleanWorkflow(workflow, true, true);
+				countSuccess.incrementAndGet();
+			}
+			catch (Exception e)
+			{
+				countFail.incrementAndGet();
+			}
+		});
+
+		if(services.isLogConsole)
+			System.out.printf(
+					"清理超时工作流: 成功 %d 个, 失败 %d 个. 剩余工作流: 活跃 %d 个.\n",
+					countSuccess.get(), countFail.get(), countActive
+			);
 	}
 
 	/**

@@ -177,4 +177,28 @@ public interface IWorkflowService
 		if(files != null)
 			Collections.addAll(list, files);
 	}
+
+	/**
+	 * 是否应该检查工作流超时状态
+	 * @param context 工作流上下文
+	 * @param now 当前时间
+	 * @implSpec 默认实现基本上只有跟前台接口有强关系的上传切片处理器才做超时检查 其它的处理器基本不用做检查
+	 * @implNote 这个方法不应抛出异常
+	 */
+	default boolean shouldCheckTimeout(WorkflowContext context, long now)
+	{
+		return false;
+	}
+
+	/**
+	 * 检查给定工作流是否已经超时
+	 * @param context 工作流上下文
+	 * @param now 当前时间
+	 * @implSpec 默认实现基本上只有跟前台接口有强关系的上传切片处理器才做超时检查 其它的处理器基本不用做检查
+	 * @implNote 这个方法不应抛出异常
+	 */
+	default boolean isTimeout(WorkflowContext context, long now)
+	{
+		return false;
+	}
 }

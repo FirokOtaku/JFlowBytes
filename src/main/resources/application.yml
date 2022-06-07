@@ -19,6 +19,8 @@ app:
   service-upload:
     # 是否启用此工作流处理器
     enable: true
+    # 上传超时时间, 单位: ms
+    timeout: 300_000
 
   service-merge:
     # 是否启用此工作流处理器

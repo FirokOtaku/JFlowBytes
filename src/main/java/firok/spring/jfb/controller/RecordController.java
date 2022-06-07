@@ -70,6 +70,9 @@ public class RecordController
 	@Autowired
 	WorkflowServices services;
 
+	/**
+	 * 删除上传记录, 这会尝试把存储空间中的文件一并删除
+	 */
 	@Transactional(rollbackFor = Exception.class)
 	@DeleteMapping("/delete_record")
 	public Ret<?> deleteRecord(
@@ -134,6 +137,37 @@ public class RecordController
 		catch (Exception e)
 		{
 			return Ret.success().setMsg("删除储存空间文件时发生错误, 这通常不会影响系统其它部分: " + e.getMessage());
+		}
+	}
+
+	/**
+	 * 重命名上传记录参数
+	 */
+	public record RenameRecordParam(String id, String name) { }
+
+	/**
+	 * 重命名上传记录
+	 */
+	@Transactional
+	@PatchMapping("/rename_record")
+	public Ret<?> renameRecord(
+			@RequestBody RenameRecordParam params
+	)
+	{
+		try
+		{
+			var record = this.serviceRecord.getById(params.id());
+			if(record == null) return Ret.fail("找不到指定上传记录");
+
+			record.setFileName(params.name());
+			this.serviceRecord.updateById(record);
+
+			return Ret.success();
+		}
+		catch (Exception e)
+		{
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();;
+			return Ret.fail("重命名上传记录文件名失败");
 		}
 	}
 }

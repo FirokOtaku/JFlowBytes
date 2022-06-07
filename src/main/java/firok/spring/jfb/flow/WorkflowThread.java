@@ -1,5 +1,6 @@
 package firok.spring.jfb.flow;
 
+import firok.spring.jfb.constant.ContextKeys;
 import firok.spring.jfb.service.ExceptionIntegrative;
 import firok.spring.jfb.service.IWorkflowService;
 
@@ -89,6 +90,10 @@ public class WorkflowThread extends Thread
 					break TICK_LOOP;
 			}
 		}
+
+		// 工作流完成之后 保留5分钟
+		context.put(ContextKeys.KEY_TIME_TIMEOUT_LIMIT, System.currentTimeMillis() + 300_000);
+
 		try
 		{
 			WorkflowServices.cleanWorkflow(context, false, true);
