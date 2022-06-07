@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @ConditionalOnBean(QiniuStorageIntegrative.class)
 @RestController
 @RequestMapping("/api/storage/qiniu")
+@CrossOrigin(origins = "*")
 public class QiniuStorageController
 {
 	@Autowired
@@ -24,7 +25,6 @@ public class QiniuStorageController
 	 */
 	@Deprecated
 	@GetMapping("/space_private/{nameBucket}/{nameFile}")
-	@CrossOrigin(origins = "*")
 	public Ret<String> spacePrivate(
 			@PathVariable("nameBucket") String nameBucket,
 			@PathVariable("nameFile") String nameFile
@@ -47,7 +47,6 @@ public class QiniuStorageController
 	 * */
 	@SuppressWarnings("HttpUrlsUsage")
 	@GetMapping("/space_public/{nameBucket}/{nameFile}")
-	@CrossOrigin(origins = "*")
 	public Ret<String> spacePublic(
 			@PathVariable("nameBucket") String nameBucket,
 			@PathVariable("nameFile") String nameFile

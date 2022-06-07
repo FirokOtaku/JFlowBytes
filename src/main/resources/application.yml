@@ -6,7 +6,14 @@ app:
     # 流程根目录
     folder-flow: V:\flow_temp\temp
     # 流程运行控制台日志
-    log-console: false
+    log-console: true
+
+  # 上传存储空间列表相关接口
+  controller-target:
+    # 是否启用相关接口
+    enable: true
+    # 可用上传空间列表
+    targets: '[ { "target": "minio", "bucket": "jfb" }, { "target": "filesystem", "bucket": "jfb" }, { "target": "qiniu", "bucket": "firok-test-public" } ]'
 
   # 控制上传过程
   service-upload:
@@ -49,6 +56,8 @@ app:
       url: http://192.168.19.115:29001
       username: minio-server
       password: minio-server-password-000*
+      # 是否检查桶存在性并自动创建
+      auto-make-bucket: true
     # 七牛云持久化存储
     qiniu:
       # 是否启用此工作流处理器

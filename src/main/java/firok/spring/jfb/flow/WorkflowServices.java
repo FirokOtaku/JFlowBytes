@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class WorkflowServices implements ApplicationContextAware
@@ -59,9 +60,19 @@ public class WorkflowServices implements ApplicationContextAware
 
 	public IWorkflowService getService(String nameService)
 	{
+		Objects.requireNonNull(nameService, "名称不可为空");
 		synchronized (this)
 		{
 			return mapService.get(nameService);
+		}
+	}
+
+	public List<IWorkflowService> getServicesOf(Class<? extends IWorkflowService> clasz)
+	{
+		Objects.requireNonNull(clasz, "类型不可为空");
+		synchronized (this)
+		{
+			return mapService.values().stream().filter(clasz::isInstance).collect(Collectors.toList());
 		}
 	}
 

@@ -11,6 +11,8 @@ import java.io.*;
  */
 public interface IStorageIntegrative
 {
+	String STORAGE_SERVICE_SUFFIX = "-storage";
+
 	/**
 	 * 将指定数据持久化存储
 	 * @param nameBucket 储存空间名称
@@ -39,4 +41,13 @@ public interface IStorageIntegrative
 	 * @param os 目标输出流
 	 */
 	void extract(String nameBucket, String nameObject, OutputStream os) throws ExceptionIntegrative;
+
+	/**
+	 * 从持久储存中删除指定内容
+	 * @param nameBucket 桶名称
+	 * @param namesObject 对象名称
+	 * @implNote 调用此方法时 namesObject 参数不为 null 且包含元素, 也就是说方法内部不需要进行相关判断
+	 * @see firok.spring.jfb.controller.RecordController#deleteRecord(String)
+	 */
+	void delete(String nameBucket, String... namesObject) throws ExceptionIntegrative;
 }

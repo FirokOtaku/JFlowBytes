@@ -43,50 +43,49 @@ public class WorkflowThread extends Thread
 				return;
 			}
 
-			// 检查上下文是否正确
-			var isContextSuitable = service.isWorkflowContextSuitable(context);
-			if(!isContextSuitable)
-			{
-				context.log(Level.SEVERE, "工作流上下文不满足需求, 强制停止工作流");
-				break TICK_LOOP;
-			}
-
-			boolean isOperationSuccess = false;
 			try
 			{
+				// 检查上下文是否正确
+				var isContextSuitable = service.isWorkflowContextSuitable(context);
+				if(!isContextSuitable)
+				{
+//					context.log(Level.SEVERE, "工作流上下文不满足需求, 强制停止工作流");
+					throw new ExceptionIntegrative("工作流上下文不满足需求, 强制停止工作流");
+				}
+
 				var nameService = service.getWorkflowServiceOperation();
 				context.log(Level.INFO, "操作工作流开始: " + nameService);
 				service.operateWorkflow(context);
 				context.log(Level.INFO, "操作工作流完成: " + nameService);
-				isOperationSuccess = true;
 			}
 			catch (ExceptionIntegrative e)
 			{
 				context.log(Level.SEVERE, "操作工作流发生异常: " + e.getMessage());
+				context.exception = e;
 				e.printStackTrace(System.err);
-				isOperationSuccess = false;
 			}
 			catch (Exception e)
 			{
 				context.log(Level.SEVERE, "操作工作流发生未知异常: " + e.getMessage());
+				context.exception = e;
 				e.printStackTrace(System.err);
-				isOperationSuccess = false;
 			}
 			finally
 			{
 				try
 				{
 					context.log(Level.INFO, "清理工作流开始");
-					service.cleanWorkflow(context, isOperationSuccess);
+					service.cleanWorkflow(context, context.exception == null);
 					context.log(Level.INFO, "清理工作流完成");
 				}
 				catch (ExceptionIntegrative e)
 				{
 					context.log(Level.SEVERE, "清理工作流发生异常: " + e.getMessage());
-					break TICK_LOOP;
+					context.exception = e;
 				}
 
-				if(!isOperationSuccess)
+				// 如果工作流执行过程出现任何错误 则停止工作流
+				if(context.exception != null)
 					break TICK_LOOP;
 			}
 		}

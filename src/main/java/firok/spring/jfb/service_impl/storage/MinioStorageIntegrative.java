@@ -6,7 +6,9 @@ import firok.spring.jfb.service.IWorkflowService;
 import firok.spring.jfb.service.storage.IStorageIntegrative;
 import firok.spring.jfb.constant.ContextKeys;
 import io.minio.*;
+import io.minio.messages.DeleteObject;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MimeTypeUtils;
 
@@ -14,16 +16,18 @@ import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 
 /**
  * 基于 MinIO 的数据持久化实现
  */
-//@ConditionalOnExpression("${app.service-storage.minio.enable}")
+@ConditionalOnExpression("${app.service-storage.minio.enable}")
 @Service
 public class MinioStorageIntegrative implements IStorageIntegrative, IWorkflowService
 {
-	public static final String SERVICE_NAME = ContextKeys.PREFIX + "minio-storage";
+	public static final String SERVICE_NAME = ContextKeys.PREFIX + "minio" + STORAGE_SERVICE_SUFFIX;
 
 	@Value("${app.service-storage.minio.url}")
 	public String url;
@@ -33,6 +37,9 @@ public class MinioStorageIntegrative implements IStorageIntegrative, IWorkflowSe
 
 	@Value("${app.service-storage.minio.password}")
 	public String password;
+
+	@Value("${app.service-storage.minio.auto-make-bucket}")
+	public boolean isAutoMakeBucket;
 
 	public MinioClient client;
 
@@ -48,6 +55,34 @@ public class MinioStorageIntegrative implements IStorageIntegrative, IWorkflowSe
 	@Override
 	public void store(String nameBucket, String nameObject, InputStream is) throws ExceptionIntegrative
 	{
+		// 上传之前先检查一下桶是否存在
+		if(isAutoMakeBucket)
+		{
+			var argsBucketExist = BucketExistsArgs.builder().bucket(nameBucket).build();
+			boolean isBucketExist;
+			try
+			{
+				isBucketExist = client.bucketExists(argsBucketExist);
+			}
+			catch (Exception e)
+			{
+				throw new ExceptionIntegrative("无法检查桶存在性", e);
+			}
+
+			if(!isBucketExist) // 桶不存在 尝试创建桶
+			{
+				try
+				{
+					var argsMakeBucket = MakeBucketArgs.builder().bucket(nameBucket).build();
+					client.makeBucket(argsMakeBucket);
+				}
+				catch (Exception e)
+				{
+					throw new ExceptionIntegrative("无法创建桶", e);
+				}
+			}
+		}
+
 		var args = PutObjectArgs.builder()
 				.bucket(nameBucket)
 				.object(nameObject)
@@ -101,5 +136,40 @@ public class MinioStorageIntegrative implements IStorageIntegrative, IWorkflowSe
 	public void operateWorkflow(WorkflowContext context) throws ExceptionIntegrative
 	{
 		StorageTransferUtil.transfer(this, context);
+	}
+
+	@Override
+	public void delete(String nameBucket, String... namesObject) throws ExceptionIntegrative
+	{
+		try
+		{
+			if(namesObject.length == 1)
+			{
+				var nameObject = namesObject[0];
+				var args = io.minio.RemoveObjectArgs.builder()
+						.bucket(nameBucket)
+						.object(nameObject)
+						.build();
+				client.removeObject(args);
+			}
+			else
+			{
+				var list = new ArrayList<DeleteObject>();
+				for(var nameObject : namesObject)
+				{
+					list.add(new DeleteObject(nameObject));
+				}
+				var args = io.minio.RemoveObjectsArgs.builder()
+						.bucket(nameBucket)
+						.objects(list)
+						.build();
+				client.removeObjects(args);
+			}
+
+		}
+		catch (Exception e)
+		{
+			throw new ExceptionIntegrative("从 MinIO 删除对象时发生错误", e);
+		}
 	}
 }

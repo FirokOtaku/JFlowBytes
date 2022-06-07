@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PreDestroy;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.*;
 
 /**
@@ -24,6 +25,7 @@ import java.util.*;
  * */
 @RestController
 @RequestMapping("/api/workflow")
+@CrossOrigin(origins = "*")
 public class FlowController
 {
 	private final Object LOCK_WORKFLOW = new Object();
@@ -41,6 +43,10 @@ public class FlowController
 				try
 				{
 					WorkflowServices.cleanWorkflow(workflow, true, true);
+					countSuccess++;
+				}
+				catch (FileNotFoundException e)
+				{
 					countSuccess++;
 				}
 				// todo 有空再说吧
@@ -155,7 +161,7 @@ public class FlowController
 		}
 		catch (Exception e)
 		{
-			return Ret.fail("工作流已移除自队列, 但清理时工作目录时发生错误. 这通常不影响系统运行, 但可能需要手动清理: " + workflow.id);
+			return Ret.success("工作流已移除自队列, 但清理时工作目录时发生错误. 这通常不影响系统运行, 但可能需要手动清理: " + workflow.id);
 		}
 	}
 

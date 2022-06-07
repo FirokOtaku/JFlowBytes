@@ -35,6 +35,8 @@
 
 扫描过程实现在 `firok.spring.jfb.controller.FlowController.scanWorkflowServices` 方法.
 
+> 我们约定存储处理器名称为 `"{存储空间名称}-storage"`
+
 ## Spring config 类
 
 因为有多个 "一 config 对应一 service" 的情况,  

@@ -144,6 +144,7 @@ public class WorkflowContext extends HashMap<String, Object>
 				ret.listLog = listLog.subList(start, start + lenLog);
 			}
 		}
+		ret.sizeLog = lenLogNow;
 
 		// 处理器列表
 		ret.listOperationName = listOperation.stream()
@@ -152,10 +153,13 @@ public class WorkflowContext extends HashMap<String, Object>
 
 		var service = getCurrentOperation();
 		// 当前处理器名称
-		ret.currentOperationName = service == null ? null : service.getWorkflowServiceOperation();
+		ret.currentOperationName = getCurrentOperationName();
 		// 当前处理器进度
 		ret.currentOperationProgressTotal = service == null ? 1 : service.getMaxProgress(this);
 		ret.currentOperationProgressNow = service == null ? 0 : service.getNowProgress(this);
+
+		// 当前工作流是否出错
+		ret.isError = exception != null;
 
 		return ret;
 	}
@@ -195,4 +199,12 @@ public class WorkflowContext extends HashMap<String, Object>
 	 */
 	@Deprecated
 	public WorkflowThread thread;
+
+	/**
+	 * 当前工作流上下文的异常信息
+	 * 如果不为空 则表示当前工作流上下文出现异常
+	 * 此工作流不会继续进行
+	 * 等待前台处理 或后台做超时删除
+	 */
+	public Throwable exception;
 }

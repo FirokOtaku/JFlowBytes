@@ -14,6 +14,7 @@ import java.io.File;
 @ConditionalOnBean(FileSystemStorageIntegrative.class)
 @RestController
 @RequestMapping("/api/storage/filesystem")
+@CrossOrigin(origins = "*")
 public class FileSystemStorageController
 {
 	@Autowired

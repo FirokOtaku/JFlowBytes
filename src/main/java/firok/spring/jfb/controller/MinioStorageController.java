@@ -20,6 +20,7 @@ import java.security.NoSuchAlgorithmException;
 @ConditionalOnBean(MinioStorageIntegrative.class)
 @RestController
 @RequestMapping("/api/storage/minio")
+@CrossOrigin(origins = "*")
 public class MinioStorageController
 {
 	@Autowired
@@ -29,7 +30,6 @@ public class MinioStorageController
 	 * 获取指定文件数据, 返回文件二进制数据流
 	 * */
 	@GetMapping("/read/{nameBucket}/{nameFile}")
-	@CrossOrigin(origins = "*")
 	public void read(
 			@PathVariable("nameFile") String nameFile,
 			@PathVariable("nameBucket") String nameBucket,

@@ -6,7 +6,9 @@ import firok.spring.jfb.service.ExceptionIntegrative;
 import firok.spring.jfb.service.IWorkflowService;
 import firok.spring.jfb.service.storage.IStorageIntegrative;
 import firok.spring.jfb.constant.ContextKeys;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.concurrent.ThreadSafe;
@@ -15,12 +17,12 @@ import java.util.Map;
 
 import static firok.spring.jfb.constant.ContextKeys.KEY_FILES;
 
-//@ConditionalOnExpression("${app.service-storage.file-system.enable}")
+@ConditionalOnExpression("${app.service-storage.file-system.enable}")
 @Service
 @ThreadSafe
 public class FileSystemStorageIntegrative implements IStorageIntegrative, IWorkflowService
 {
-	public static final String SERVICE_NAME = ContextKeys.PREFIX + "filesystem-storage";
+	public static final String SERVICE_NAME = ContextKeys.PREFIX + "filesystem" + STORAGE_SERVICE_SUFFIX;
 
 	@Value("${app.service-storage.file-system.folder-storage}")
 	public File folderStorage;
@@ -78,5 +80,23 @@ public class FileSystemStorageIntegrative implements IStorageIntegrative, IWorkf
 	public void operateWorkflow(WorkflowContext context) throws ExceptionIntegrative
 	{
 		StorageTransferUtil.transfer(this, context);
+	}
+
+	@Override
+	public void delete(String nameBucket, String... namesObject) throws ExceptionIntegrative
+	{
+		var folderBucket = new File(folderStorage, nameBucket);
+		for(var nameObject : namesObject)
+		{
+			var fileObject = new File(folderBucket, nameObject);
+			try
+			{
+				FileUtils.forceDelete(fileObject);
+			}
+			catch (Exception e)
+			{
+				throw new ExceptionIntegrative("从本地储存删除文件时发生错误", e);
+			}
+		}
 	}
 }
