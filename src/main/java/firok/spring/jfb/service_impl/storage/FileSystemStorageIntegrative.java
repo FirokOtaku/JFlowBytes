@@ -24,6 +24,12 @@ public class FileSystemStorageIntegrative implements IStorageIntegrative, IWorkf
 {
 	public static final String SERVICE_NAME = ContextKeys.PREFIX + "filesystem" + STORAGE_SERVICE_SUFFIX;
 
+	@Override
+	public String getStorageTargetName()
+	{
+		return "filesystem";
+	}
+
 	@Value("${app.service-storage.file-system.folder-storage}")
 	public File folderStorage;
 

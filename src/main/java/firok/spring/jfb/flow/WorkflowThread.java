@@ -92,7 +92,9 @@ public class WorkflowThread extends Thread
 		}
 
 		// 工作流完成之后 保留5分钟
-		context.put(ContextKeys.KEY_TIME_TIMEOUT_LIMIT, System.currentTimeMillis() + 300_000);
+		// 如果工作流自己加了这个限制变量就不用在这里加了
+		if(!context.containsKey(ContextKeys.KEY_TIME_TIMEOUT_LIMIT))
+			context.put(ContextKeys.KEY_TIME_TIMEOUT_LIMIT, System.currentTimeMillis() + 300_000);
 
 		try
 		{

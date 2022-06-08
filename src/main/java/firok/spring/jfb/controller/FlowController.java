@@ -118,6 +118,8 @@ public class FlowController
 		var lenLog = params != null && params.lenLog() != null ? params.lenLog() : 3;
 		if(lenLog < 0) lenLog = 0;
 		if(lenLog > 999) lenLog = 999;
+		final long now = System.currentTimeMillis();
+		final long limit = now + 300_000;
 		// 开始查询
 		synchronized (LOCK_WORKFLOW)
 		{
@@ -132,6 +134,9 @@ public class FlowController
 				synchronized (workflow.LOCK)
 				{
 					status = workflow.getCurrentStatus(lenLog);
+					// 每次查询到工作流信息 相当于ping一次工作流 都会把这条工作流的超时时间延后
+					if(workflow.get(ContextKeys.KEY_TIME_TIMEOUT_LIMIT) instanceof Long)
+						workflow.put(ContextKeys.KEY_TIME_TIMEOUT_LIMIT, limit);
 				}
 				ret.put(idWorkflow, status);
 			}
@@ -225,6 +230,10 @@ public class FlowController
 				WorkflowServices.cleanWorkflow(workflow, true, true);
 				countSuccess.incrementAndGet();
 			}
+			catch (FileNotFoundException e)
+			{
+				countSuccess.incrementAndGet();
+			}
 			catch (Exception e)
 			{
 				countFail.incrementAndGet();
@@ -232,10 +241,13 @@ public class FlowController
 		});
 
 		if(services.isLogConsole)
+		{
 			System.out.printf(
-					"清理超时工作流: 成功 %d 个, 失败 %d 个. 剩余工作流: 活跃 %d 个.\n",
+					"[%s] 清理超时工作流: 成功 %d 个, 失败 %d 个. 剩余工作流: 活跃 %d 个.\n",
+					new Date().toLocaleString(),
 					countSuccess.get(), countFail.get(), countActive
 			);
+		}
 	}
 
 	/**

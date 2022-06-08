@@ -1,19 +1,14 @@
 package firok.spring.jfb;
 
-import firok.spring.jfb.controller.FlowController;
 import firok.topaz.Topaz;
 import org.mybatis.spring.annotation.MapperScan;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
 
 @SpringBootApplication
-@EnableScheduling
 @MapperScan("firok.spring.jfb.mapper")
 public class JFlowBytesApplication
 {
@@ -58,18 +53,6 @@ public class JFlowBytesApplication
 	public static void stop()
 	{
 		contextSpringBoot.close();
-	}
-
-	@Autowired
-	public FlowController flows;
-
-	/**
-	 * 定期清理超时工作流
-	 */
-	@Scheduled(fixedRate = 60_000, initialDelay = 1_000)
-	public void cleanTimeoutWorkflow()
-	{
-		flows.cleanTimeoutWorkflow();
 	}
 
 	public static void main(String[] args)

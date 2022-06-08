@@ -34,8 +34,7 @@ public class FFmpegTranscodeIntegrative
 		{
 			if(versionFFmpeg != null) return;
 
-			// todo 1 这里目前是基于cmd 后面可能会出现操作系统相关的内容
-			// todo 2 这里的ffmpeg路径是写死的 后面估计会换成上面配置项里的值
+			// todo 这里目前是基于cmd 后面可能会出现操作系统相关的内容
 			try(var process = new NativeProcess(pathFFmpeg + " -version"))
 			{
 				int value = process.waitFor();

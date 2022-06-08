@@ -29,6 +29,12 @@ public class MinioStorageIntegrative implements IStorageIntegrative, IWorkflowSe
 {
 	public static final String SERVICE_NAME = ContextKeys.PREFIX + "minio" + STORAGE_SERVICE_SUFFIX;
 
+	@Override
+	public String getStorageTargetName()
+	{
+		return "minio";
+	}
+
 	@Value("${app.service-storage.minio.url}")
 	public String url;
 

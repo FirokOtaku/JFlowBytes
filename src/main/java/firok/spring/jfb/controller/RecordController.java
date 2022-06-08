@@ -12,6 +12,7 @@ import firok.spring.jfb.flow.WorkflowServices;
 import firok.spring.jfb.service.ExceptionIntegrative;
 import firok.spring.jfb.service.storage.IStorageIntegrative;
 import firok.spring.jfb.service_impl.record.RecordIntegrative;
+import firok.spring.jfb.util.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,6 +64,8 @@ public class RecordController
 				.like(filterFileName != null, UploadRecordBean::getFileName, '%' + filterFileName + '%')
 				.like(filterBucketName != null, UploadRecordBean::getBucketName, '%' + filterBucketName + '%')
 				.eq(filterTarget != null, UploadRecordBean::getTarget, filterTarget)
+				// 最新上传的文件排在前面
+				.orderBy(true, false, UploadRecordBean::getUploadTime)
 		);
 		return Ret.success(page);
 	}
@@ -126,13 +129,18 @@ public class RecordController
 			if(arrFileNames == null) return Ret.success("删除成功");
 
 			// 开始寻找相关工作流处理器
-			var serviceName = target + IStorageIntegrative.STORAGE_SERVICE_SUFFIX;
-			var service = services.getService(serviceName) instanceof IStorageIntegrative ss ? ss : null;
-			if(service == null) throw new ExceptionIntegrative("不存在指定工作流处理器, 或相关处理器未启用: " + serviceName);
-			// 调用处理器删除
-			service.delete(bucket, arrFileNames);
+			var list = services.getServicesOf(IStorageIntegrative.class);
+			for(var service : list)
+			{
+				if(Objects.equals(service.getStorageTargetName(), target))
+				{
+					// 调用处理器删除
+					service.delete(bucket, arrFileNames);
 
-			return Ret.success().setMsg("删除成功");
+					return Ret.success().setMsg("删除成功");
+				}
+			}
+			throw new ExceptionIntegrative("不存在指定工作流处理器, 或相关处理器未启用: " + target);
 		}
 		catch (Exception e)
 		{
@@ -156,6 +164,8 @@ public class RecordController
 	{
 		try
 		{
+			Assertions.assertStrLenRange(params.name(), 1, 255, "上传记录名称长度必须在1~255之间");
+
 			var record = this.serviceRecord.getById(params.id());
 			if(record == null) return Ret.fail("找不到指定上传记录");
 
@@ -166,8 +176,8 @@ public class RecordController
 		}
 		catch (Exception e)
 		{
-			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();;
-			return Ret.fail("重命名上传记录文件名失败");
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			return Ret.fail("重命名上传记录文件名失败: " + e.getMessage());
 		}
 	}
 }

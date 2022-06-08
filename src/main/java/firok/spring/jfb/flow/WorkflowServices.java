@@ -67,13 +67,22 @@ public class WorkflowServices implements ApplicationContextAware
 		}
 	}
 
-	public List<IWorkflowService> getServicesOf(Class<? extends IWorkflowService> clasz)
+	@SuppressWarnings("unchecked")
+	public <T> List<T> getServicesOf(Class<T> clasz)
 	{
 		Objects.requireNonNull(clasz, "类型不可为空");
+		var ret = new ArrayList<T>();
 		synchronized (this)
 		{
-			return mapService.values().stream().filter(clasz::isInstance).collect(Collectors.toList());
+			for(var service : mapService.values())
+			{
+				if(clasz.isInstance(service))
+				{
+					ret.add((T) service);
+				}
+			}
 		}
+		return ret;
 	}
 
 	public List<String> getServiceNames()

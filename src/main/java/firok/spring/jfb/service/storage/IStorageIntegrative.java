@@ -6,12 +6,15 @@ import java.io.*;
 
 /**
  * 与存储服务进行交互
- *
- * todo 后面需要扩展功能的时候再继续抽象
  */
 public interface IStorageIntegrative
 {
 	String STORAGE_SERVICE_SUFFIX = "-storage";
+
+	/**
+	 * 存储空间名称. 临时方法, 用作寻找储存空间删除文件
+	 */
+	String getStorageTargetName();
 
 	/**
 	 * 将指定数据持久化存储

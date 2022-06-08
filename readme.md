@@ -29,3 +29,11 @@
 
 除了标准 SpringBoot 依赖,  
 项目还依赖 [MVCI](https://github.com/351768593/MVCIntrospector) 工具和 [Topaz](https://github.com/351768593/Topaz) 库.
+
+**项目基于 Java 17.**
+
+## 配置运行环境
+
+* (可选) 安装并启用 MinIO
+* (可选) 注册并启动七牛云
+* (可选) 安装并启用 MySQL

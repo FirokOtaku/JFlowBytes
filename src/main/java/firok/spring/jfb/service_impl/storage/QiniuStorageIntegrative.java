@@ -7,7 +7,7 @@ import com.qiniu.storage.*;
 import com.qiniu.storage.model.BatchStatus;
 import com.qiniu.util.Auth;
 import com.qiniu.util.StringMap;
-import firok.spring.jfb.config.BucketInfo;
+import firok.spring.jfb.config.QiniuBucketInfo;
 import firok.spring.jfb.flow.WorkflowContext;
 import firok.spring.jfb.service.ExceptionIntegrative;
 import firok.spring.jfb.service.IWorkflowService;
@@ -24,7 +24,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,13 +36,19 @@ public class QiniuStorageIntegrative implements IStorageIntegrative, IWorkflowSe
 {
 	public static final String SERVICE_NAME = ContextKeys.PREFIX + "qiniu" + STORAGE_SERVICE_SUFFIX;
 
+	@Override
+	public String getStorageTargetName()
+	{
+		return "qiniu";
+	}
+
 	@Value("${app.service-storage.qiniu.access-key}")
 	public String accessKey;
 
 	@Value("${app.service-storage.qiniu.secret-key}")
 	public String secretKey;
 
-	Map<String, BucketInfo> mapBuckets;
+	Map<String, QiniuBucketInfo> mapBuckets;
 	@Value("${app.service-storage.qiniu.buckets}")
 	public void setMapBuckets(String raw) throws JsonProcessingException, IllegalArgumentException
 	{
@@ -62,12 +67,12 @@ public class QiniuStorageIntegrative implements IStorageIntegrative, IWorkflowSe
 			var deadline = obj.get("deadline").asInt();
 			var cfg = new com.qiniu.storage.Configuration(Region.huadong());
 			var managerUpload = new UploadManager(cfg);
-			var info = new BucketInfo(nameBucket, domain, region, useHttps, deadline, managerUpload);
+			var info = new QiniuBucketInfo(nameBucket, domain, region, useHttps, deadline, managerUpload);
 			mapBuckets.put(nameBucket, info);
 		}
 	}
 
-	BucketInfo getBucket(String nameBucket)
+	QiniuBucketInfo getBucket(String nameBucket)
 	{
 		var bucketInfo = mapBuckets.get(nameBucket);
 		if(bucketInfo == null)

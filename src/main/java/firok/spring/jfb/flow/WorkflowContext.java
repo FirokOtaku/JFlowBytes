@@ -118,7 +118,6 @@ public class WorkflowContext extends HashMap<String, Object>
 		return typeRequire != null && typeCurrent != null && typeRequire.isAssignableFrom(typeCurrent);
 	}
 
-	// todo 日志功能以后再做 现在没时间做日志
 	private final List<LogNode> listLog = new ArrayList<>(20);
 
 	/**
@@ -180,7 +179,7 @@ public class WorkflowContext extends HashMap<String, Object>
 		}
 
 		if(WorkflowServices.instance.isLogConsole)
-			System.out.printf("[WF|%d|%s|%s]\n", now, this.id, msg);
+			System.out.printf("[%s] {%s} %s\n", new Date(now).toLocaleString(), this.id, msg);
 	}
 	public String contentLog()
 	{
