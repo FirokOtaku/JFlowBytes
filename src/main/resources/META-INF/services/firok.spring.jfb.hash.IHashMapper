@@ -1,0 +1,3 @@
+firok.spring.jfb.hash.NoHashMapper
+firok.spring.jfb.hash.UUIDQuadrupleMapper
+firok.spring.jfb.hash.UUIDSextupleMapper

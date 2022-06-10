@@ -30,8 +30,9 @@ public class FileSystemStorageController
 			@PathVariable("nameBucket") String nameBucket
 	)
 	{
+		var hash = service.mapperHash.mapHash(nameFile);
 		var folderBucket = new File(service.folderStorage, nameBucket);
-		var file = new File(folderBucket, nameFile);
+		var file = new File(folderBucket, hash.getHashString());
 		return new FileSystemResource(file);
 	}
 }

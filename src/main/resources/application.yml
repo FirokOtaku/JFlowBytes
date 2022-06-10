@@ -50,6 +50,11 @@ app:
       enable: true
       # 文件系统的储存位置
       folder-storage: V:\flow_temp\storage
+      # 文件名映射器
+      # 通过此存储器读写所有文件路径前 都会先对路径字符串使用指定映射器计算
+      # 修改此字段会使得之前以不同映射器映射储存的持久化存储数据无法读取
+      # 目前可用映射器: no-hash, uuid-quadruple, uuid-sextuple
+      filename-hash-mapper: uuid-sextuple
     # MinIO 持久化存储
     minio:
       # 是否启用此工作流处理器
@@ -78,6 +83,11 @@ server:
       force: true
 
 spring:
+  session:
+    jdbc:
+      initialize-schema: always
+      schema: classpath:/schema-mysql.sql
+
   datasource:
 #    driver-class-name: com.mysql.cj.jdbc.Driver
 #    url: jdbc:mysql://192.168.80.167:3306/sdyzt?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf8&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull
@@ -97,7 +107,6 @@ spring:
       max-lifetime: 1800000
       connection-timeout: 30000
       connection-test-query: select * from information_schema.tables limit 1
-    initialization-mode: always
   mvc:
     static-path-pattern: /static/**
   servlet:
