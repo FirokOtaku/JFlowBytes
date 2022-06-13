@@ -45,8 +45,7 @@ public class JFlowBytesApplication
 	@PostConstruct
 	public void postConstruct()
 	{
-//		System.out.printf("%s v%s by %s\n", name, version, author);
-		System.out.println("Hi there, Topaz " + Topaz.VERSION);
+		System.out.printf("Hi there, Topaz %s, it's me, %s %s%n", Topaz.VERSION, name, version);
 	}
 
 	static org.springframework.context.ConfigurableApplicationContext contextSpringBoot;

@@ -242,11 +242,15 @@ public class FlowController
 
 		if(services.isLogConsole)
 		{
-			System.out.printf(
-					"[%s] 清理超时工作流: 成功 %d 个, 失败 %d 个. 剩余工作流: 活跃 %d 个.\n",
-					new Date().toLocaleString(),
-					countSuccess.get(), countFail.get(), countActive
-			);
+			int _countSuccess = countSuccess.get(), _countFail = countFail.get();
+			if(_countSuccess > 0 || _countFail > 0 || countActive > 0)
+			{
+				System.out.printf(
+						"[%s] 清理超时工作流: 成功 %d 个, 失败 %d 个. 剩余活跃工作流: %d 个.\n",
+						new Date().toLocaleString(),
+						_countSuccess, _countFail, countActive
+				);
+			}
 		}
 	}
 

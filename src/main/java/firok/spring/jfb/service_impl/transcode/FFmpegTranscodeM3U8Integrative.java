@@ -90,22 +90,43 @@ public class FFmpegTranscodeM3U8Integrative extends FFmpegTranscodeIntegrative i
 			throw new ExceptionIntegrative("合理化路径时发生错误", e);
 		}
 
-		var command = """
-                    %s -hwaccel auto -i "%s" -hls_time "2" -hls_segment_type "mpegts" -hls_segment_size "500000" -hls_allow_cache "1" -hls_list_size "0" -hls_flags "independent_segments" -c:v copy "%s"
-                    """.formatted(super.pathFFmpeg, pathVideo, pathM3U8);
+		// 检查视频元信息
+		// 给前台提供更好的错误返回信息
+		var commandCheck = """
+				%s -find_stream_info "%s"
+				""".formatted(super.pathFFprobe, pathVideo);
 
-		try(var process = new NativeProcess(command))
+		try(var process = new NativeProcess(commandCheck))
 		{
 			int ret = process.waitFor();
 			if(ret != 0)
 			{
 				var contentErr = process.contentErr();
-				throw new RuntimeException("转码发生错误: \n"+contentErr);
+				throw new RuntimeException(contentErr);
 			}
 		}
 		catch (Exception e)
 		{
-			throw new ExceptionIntegrative("转码发生错误", e);
+			throw new ExceptionIntegrative("检测视频文件元信息时发生错误, 视频文件格式不受支持或已损坏, 请检查视频文件: " + e.getMessage(), e);
+		}
+
+		// 处理视频 转码切片
+		var commandProcess = """
+                    %s -hwaccel auto -i "%s" -hls_time "2" -hls_segment_type "mpegts" -hls_segment_size "500000" -hls_allow_cache "1" -hls_list_size "0" -hls_flags "independent_segments" -c:v copy "%s"
+                    """.formatted(super.pathFFmpeg, pathVideo, pathM3U8);
+
+		try(var process = new NativeProcess(commandProcess))
+		{
+			int ret = process.waitFor();
+			if(ret != 0)
+			{
+				var contentErr = process.contentErr();
+				throw new RuntimeException(contentErr);
+			}
+		}
+		catch (Exception e)
+		{
+			throw new ExceptionIntegrative("转码发生错误: " + e.getMessage(), e);
 		}
 	}
 

@@ -27,40 +27,65 @@ public class FFmpegTranscodeIntegrative
 	 */
 	public static String versionFFmpeg = null;
 
+	/**
+	 * ffprobe 版本信息
+	 */
+	public static String versionFFprobe = null;
+
 	@PostConstruct
 	private void postConstruct()
 	{
 		synchronized (FFmpegTranscodeIntegrative.class)
 		{
 			if(versionFFmpeg != null) return;
-
-			// todo 这里目前是基于cmd 后面可能会出现操作系统相关的内容
-			try(var process = new NativeProcess(pathFFmpeg + " -version"))
+			else
 			{
-				int value = process.waitFor();
-
-				var contentOut = process.contentOut();
-				var contentErr = process.contentErr();
-
-				if(value != 0 || !contentErr.isBlank()) // 错误输出流有内容
+				// todo 这里目前是基于cmd 后面可能会出现操作系统相关的内容
+				try(var process = new NativeProcess(pathFFmpeg + " -version"))
 				{
-					System.err.println("读取 ffmpeg 版本信息时获取到错误信息:\n====");
-					System.err.println(contentErr);
-					System.err.println("====");
+					int ret = process.waitFor();
 
-					throw new RuntimeException("读取 ffmpeg 版本信息出错");
+					if(ret != 0)
+					{
+						System.err.println("读取 ffmpeg 版本信息时获取到错误信息:\n====");
+						System.err.println(process.contentErr());
+						System.err.println("====");
+
+						throw new RuntimeException("读取 ffmpeg 版本信息出错");
+					}
+					else
+					{
+						System.out.println("ffmpeg 版本信息: " + (versionFFmpeg = process.contentOut().split("\n")[0]));
+					}
 				}
-				else if(!contentOut.isBlank()) // 标准输出流有内容
+				catch (Exception e)
 				{
-					var lines = contentOut.split("\n");
-					System.out.println("读取 ffmpeg 版本信息:\n====");
-					System.out.println(versionFFmpeg = lines[0]);
-					System.out.println("====");
+					throw new RuntimeException("没有检测到可用 ffmpeg, 请确保系统中已正确安装依赖或正确配置可执行文件路径", e);
 				}
 			}
-			catch (Exception e)
+
+			if(versionFFprobe != null) return;
+			else
 			{
-				throw new RuntimeException("没有检测到可用 ffmpeg, 请确保系统中已正确安装依赖或正确配置可执行文件路径", e);
+				try(var process = new NativeProcess(pathFFprobe + " -version"))
+				{
+					int ret = process.waitFor();
+
+					if(ret != 0)
+					{
+						System.err.println("读取 ffprobe 版本信息时获取到错误信息:\n====");
+						System.err.println(process.contentErr());
+						System.err.println("====");
+					}
+					else
+					{
+						System.out.println("ffprobe 版本信息: " + (versionFFprobe = process.contentOut().split("\n")[0]));
+					}
+				}
+				catch (Exception e)
+				{
+					throw new RuntimeException("没有检测到可用 ffprobe, 请确保系统中已正确安装依赖或正确配置可执行文件路径", e);
+				}
 			}
 		}
 	}
