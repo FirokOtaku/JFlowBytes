@@ -1,0 +1,35 @@
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="|${project_name} v${project_version}|">JFlowBytes</title>
+    <style>
+        th
+        {
+            text-align: left;
+        }
+        td
+        {
+            border: 1px solid gray;
+        }
+    </style>
+</head>
+<body>
+
+<table>
+    <thead>
+    <tr>
+        <th style="width: 250px">services</th>
+        <th>link</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>Web Uploader</td>
+        <td>
+            <a href="/web_uploader">/web_uploader</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

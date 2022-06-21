@@ -76,6 +76,8 @@ app:
       buckets: '{"firok-test-public":{"region":"huadong","domain":"rc3wj1b5q.hd-bkt.clouddn.com","use-https":false,"deadline":36000},"demo-firok":{"region":"huadong","domain":"rb2uaos6l.hd-bkt.clouddn.com","use-https":false,"deadline":36000}}'
 
 server:
+  compression:
+    enabled: true
   port: 29011
   servlet:
     encoding:
@@ -86,7 +88,7 @@ spring:
   session:
     jdbc:
       initialize-schema: always
-      schema: classpath:/schema-mysql.sql
+      schema: classpath:/data.sql
 
   datasource:
 #    driver-class-name: com.mysql.cj.jdbc.Driver
@@ -113,3 +115,9 @@ spring:
     multipart:
       max-file-size: 2048MB
       max-request-size: 2048MB
+  thymeleaf:
+    enabled: true
+    cache: true
+    encoding: UTF-8
+    excluded-view-names: /static/**
+    prefix: classpath:/templates/

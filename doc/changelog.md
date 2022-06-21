@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.25
+
+* 新增 Thymeleaf 依赖
+* 新增前端模块
+  * 基于 Vue 3 和 Element Plus 的上传页面
+
 ## 0.1.24
 
 * 现在项目启动时还会检测 ffprobe 版本信息

@@ -1,0 +1,28 @@
+{
+  "name": "web_uploader",
+  "version": "0.1.25",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build --mode prod",
+    "package": ".\\script\\package.bat\""
+  },
+  "dependencies": {
+    "@element-plus/icons-vue": "^2.0.5",
+    "axios": "^0.27.2",
+    "core-js": "^3.8.3",
+    "element-plus": "^2.2.6",
+    "video.js": "^7.19.2",
+    "vue": "^3.2.13"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "~5.0.0",
+    "@vue/cli-service": "~5.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead",
+    "not ie 11"
+  ]
+}

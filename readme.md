@@ -23,14 +23,14 @@
   * [DrawIO Diagrams - Microsoft Store](https://apps.microsoft.com/store/detail/drawio-diagrams/9MVVSZK43QQW)
   * [DrawIO Diagrams Online](https://app.diagrams.net/)
 
-项目启动后访问 `http://{host}:{port}/` 会自动跳转到示例上传页面.
-
 ## 依赖
 
 除了标准 SpringBoot 依赖,  
 项目还依赖 [MVCI](https://github.com/351768593/MVCIntrospector) 工具和 [Topaz](https://github.com/351768593/Topaz) 库.
 
-**项目基于 Java 17.**
+**后端基于 Java 17.**
+
+前端编译打包需要使用 NodeJS.
 
 ## 配置运行环境
 
@@ -38,3 +38,21 @@
 * (可选) 安装并启用 MinIO
 * (可选) 注册并启动七牛云
 * (可选) 安装并启用 MySQL
+* 安装 NodeJS
+* 编译打包前端
+* 编译打包后端
+
+启动后直接访问 `http://{host}:{port}/` 即可.
+
+关于编译打包前端:
+
+```bash
+cd web_uploader
+# 编译打包前端资源
+npm install
+npm run build
+# 这是一个 windows 批处理脚本 (script/package.bat)
+# 用于将编译打包后的前端资源文件复制到后端静态资源目录
+# 其它平台请手动复制相关文件 或编写复制脚本
+npm run package
+```

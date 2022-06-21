@@ -4,6 +4,7 @@ import firok.topaz.Topaz;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.core.io.ClassPathResource;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
@@ -22,7 +23,7 @@ public class JFlowBytesApplication
 	public static String url;
 	static
 	{
-		try(var ios = ClassLoader.getSystemResourceAsStream("project.properties"))
+		try(var ios = new ClassPathResource("project.properties").getInputStream())
 		{
 			Properties props = new Properties();
 			props.load(ios);
