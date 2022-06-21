@@ -506,6 +506,13 @@
 			<!-- that just works -->
 		</el-dialog>
 
+		<!-- 0.1.26 by Firok 你看像不像是上次我转移代码的时候忘了把这块加上 -->
+		<upload-status-ball v-show="countFinishedWorkflow || countErrorWorkflow || countActiveWorkflow"
+		                    :status="currentStatus"
+		                    :color-bar="currentStatus === 'success' ? '#13ce66' : currentStatus === 'exception' ? '#ff4949' : '#20a0ff'"
+		                    :value="currentProgress"
+		                    :speed="sumUploadSpeed"/>
+
 	</div>
 </template>
 
