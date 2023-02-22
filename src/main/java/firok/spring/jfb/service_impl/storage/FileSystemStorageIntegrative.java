@@ -2,11 +2,11 @@ package firok.spring.jfb.service_impl.storage;
 
 
 import firok.spring.jfb.flow.WorkflowContext;
-import firok.spring.jfb.hash.IHashMapper;
 import firok.spring.jfb.service.ExceptionIntegrative;
 import firok.spring.jfb.service.IWorkflowService;
 import firok.spring.jfb.service.storage.IStorageIntegrative;
 import firok.spring.jfb.constant.ContextKeys;
+import firok.topaz.hash.IHashMapper;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -38,7 +38,7 @@ public class FileSystemStorageIntegrative implements IStorageIntegrative, IWorkf
 	@Value("${app.service-storage.file-system.filename-hash-mapper:no-hash}")
 	public void setMapperHash(String name)
 	{
-		var mapper = IHashMapper.getMapper(name);
+		var mapper = IHashMapper.of(name);
 		if(mapper == null)
 			throw new IllegalArgumentException("找不到指定文件路径映射器: " + name);
 		this.mapperHash = mapper;
@@ -63,8 +63,8 @@ public class FileSystemStorageIntegrative implements IStorageIntegrative, IWorkf
 	public void store(String nameBucket, String nameObject, InputStream is) throws ExceptionIntegrative
 	{
 		var folderBucket = new File(folderStorage, nameBucket);
-		var hash = this.mapperHash.mapHash(nameObject);
-		var fileObject = new File(folderBucket, hash.getHashString());
+		var hash = this.mapperHash.hashOf(nameObject);
+		var fileObject = new File(folderBucket, hash.getHashValue());
 		fileObject.getParentFile().mkdirs();
 
 		try(var ofs = new FileOutputStream(fileObject))
@@ -81,8 +81,8 @@ public class FileSystemStorageIntegrative implements IStorageIntegrative, IWorkf
 	public void extract(String nameBucket, String nameObject, OutputStream os) throws ExceptionIntegrative
 	{
 		var folderBucket = new File(folderStorage, nameBucket);
-		var hash = this.mapperHash.mapHash(nameObject);
-		var fileObject = new File(folderBucket, hash.getHashString());
+		var hash = this.mapperHash.hashOf(nameObject);
+		var fileObject = new File(folderBucket, hash.getHashValue());
 
 		try
 		{
@@ -107,8 +107,8 @@ public class FileSystemStorageIntegrative implements IStorageIntegrative, IWorkf
 		var folderBucket = new File(folderStorage, nameBucket);
 		for(var nameObject : namesObject)
 		{
-			var hash = this.mapperHash.mapHash(nameObject);
-			var fileObject = new File(folderBucket, hash.getHashString());
+			var hash = this.mapperHash.hashOf(nameObject);
+			var fileObject = new File(folderBucket, hash.getHashValue());
 			try
 			{
 				FileUtils.forceDelete(fileObject);

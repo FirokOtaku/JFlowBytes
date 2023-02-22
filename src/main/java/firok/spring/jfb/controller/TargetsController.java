@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import firok.spring.jfb.bean.Ret;
+import firok.topaz.spring.Ret;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -40,7 +40,7 @@ public class TargetsController
 			var info = new TargetInfo(target, bucket);
 			listTemp.add(info);
 		}
-		mapTarget = firok.topaz.Collections.mappingKeyMultiValueSet(listTemp, TargetInfo::target, TargetInfo::bucket);
+		mapTarget = firok.topaz.general.Collections.mappingKeyMultiValueSet(listTemp, TargetInfo::target, TargetInfo::bucket);
 	}
 
 	/**

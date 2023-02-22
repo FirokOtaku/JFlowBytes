@@ -1,6 +1,5 @@
 package firok.spring.jfb.controller;
 
-import firok.spring.jfb.bean.Ret;
 import firok.spring.jfb.constant.ContextKeys;
 import firok.spring.jfb.flow.WorkflowContext;
 import firok.spring.jfb.flow.WorkflowServices;
@@ -9,6 +8,7 @@ import firok.spring.jfb.flow.WorkflowThread;
 import firok.spring.jfb.service.ExceptionIntegrative;
 import firok.spring.jfb.service.IWorkflowService;
 import firok.spring.jfb.service.upload.IUploadIntegrative;
+import firok.topaz.spring.Ret;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -184,6 +184,7 @@ public class FlowController
 	/**
 	 * 检查并清理超时的工作流
 	 */
+	@SuppressWarnings("deprecation")
 	public void cleanTimeoutWorkflow()
 	{
 		var listWorkflow = new ArrayList<WorkflowContext>();

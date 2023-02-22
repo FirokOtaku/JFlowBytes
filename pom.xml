@@ -10,7 +10,7 @@
     </parent>
     <groupId>firok.spring</groupId>
     <artifactId>jfb</artifactId>
-    <version>0.1.25</version>
+    <version>0.1.27</version>
     <name>JFlowBytes</name>
     <url>https://github.com/351768593/JFlowBytes</url>
     <description>A simple file processing system.</description>
@@ -63,12 +63,12 @@
         <dependency>
             <groupId>firok.spring</groupId>
             <artifactId>mvci</artifactId>
-            <version>17.3.0</version>
+            <version>17.6.0</version>
         </dependency>
         <dependency>
             <groupId>firok</groupId>
             <artifactId>topaz</artifactId>
-            <version>2.2.0</version>
+            <version>4.1.0</version>
         </dependency>
 
         <dependency>

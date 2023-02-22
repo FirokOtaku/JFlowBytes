@@ -1,7 +1,7 @@
 package firok.spring.jfb.service_impl.transcode;
 
-import firok.spring.jfb.constant.PlatformType;
-import firok.topaz.NativeProcess;
+import firok.topaz.platform.NativeProcess;
+import firok.topaz.platform.PlatformTypes;
 import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.PostConstruct;
@@ -10,7 +10,7 @@ public class FFmpegTranscodeIntegrative
 {
 	public FFmpegTranscodeIntegrative()
 	{
-		if(!PlatformType.Windows.isCurrent())
+		if(!PlatformTypes.Windows.isCurrent())
 		{
 			throw new RuntimeException("目前只适配 Windows");
 		}

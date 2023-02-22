@@ -5,7 +5,7 @@ import firok.spring.jfb.service.ExceptionIntegrative;
 import firok.spring.jfb.service.IWorkflowService;
 import firok.spring.jfb.service.transcode.ITranscodeM3U8Integrative;
 import firok.spring.jfb.constant.ContextKeys;
-import firok.topaz.NativeProcess;
+import firok.topaz.platform.NativeProcess;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Service;
@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
+import java.util.logging.Level;
 
 import static firok.spring.jfb.constant.ContextKeys.KEY_FILES;
 
@@ -158,6 +159,7 @@ public class FFmpegTranscodeM3U8Integrative extends FFmpegTranscodeIntegrative i
 			var command = """
 					%s -y -i "%s" -r 1 -frames:v 1 -f image2 "%s"
 					""".formatted(super.pathFFmpeg, pathFileMerge, pathFileThumbnail);
+//			context.log(Level.ALL, command);
 			try(var process = new NativeProcess(command))
 			{
 				int ret = process.waitFor();
@@ -185,6 +187,7 @@ public class FFmpegTranscodeM3U8Integrative extends FFmpegTranscodeIntegrative i
 			var command = """
                     %s -hwaccel auto -i "%s" -hls_time "2" -hls_segment_type "mpegts" -hls_segment_size "500000" -hls_allow_cache "1" -hls_list_size "0" -hls_flags "independent_segments" -c:v copy "%s"
                     """.formatted(super.pathFFmpeg, pathFileMerge, pathFileM3U8);
+//			context.log(Level.ALL, command);
 			try(var process = new NativeProcess(command))
 			{
 				int ret = process.waitFor();

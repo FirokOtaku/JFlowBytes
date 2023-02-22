@@ -163,6 +163,7 @@ public class WorkflowContext extends HashMap<String, Object>
 		return ret;
 	}
 
+	@SuppressWarnings("deprecation")
 	public void log(Level level, Object obj)
 	{
 		if(obj == null) return;
@@ -193,10 +194,7 @@ public class WorkflowContext extends HashMap<String, Object>
 
 	/**
 	 * 工作流相关线程
-	 * @deprecated 暂时没想好这个要不要这么处理
-	 * todo 可能会移除掉
 	 */
-	@Deprecated
 	public WorkflowThread thread;
 
 	/**

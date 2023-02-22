@@ -10,9 +10,9 @@ import java.util.Objects;
 
 import static firok.spring.jfb.constant.ContextKeys.KEY_PROGRESS_NOW;
 import static firok.spring.jfb.constant.ContextKeys.KEY_PROGRESS_TOTAL;
-import static firok.topaz.Capacities.mb;
-import static firok.topaz.Collections.mappingKeyValue;
-import static firok.topaz.Collections.sumLong;
+import static firok.topaz.general.Capacities.mb;
+import static firok.topaz.general.Collections.mappingKeyValue;
+import static firok.topaz.general.Collections.sumLong;
 import static java.util.Arrays.asList;
 
 class StorageTransferUtil

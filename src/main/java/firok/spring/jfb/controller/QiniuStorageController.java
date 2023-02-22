@@ -1,8 +1,8 @@
 package firok.spring.jfb.controller;
 
 import com.qiniu.common.QiniuException;
-import firok.spring.jfb.bean.Ret;
 import firok.spring.jfb.service_impl.storage.QiniuStorageIntegrative;
+import firok.topaz.spring.Ret;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.web.bind.annotation.*;
